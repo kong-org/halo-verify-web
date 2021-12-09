@@ -91,8 +91,11 @@ ndef.addEventListener("reading", async ({message, serialNumber}) => {
 
 		pkey1 = myURL.searchParams.get("pkey1");
 		pkey2 = myURL.searchParams.get("pkey2");
-		challenge = url.searchParams.get("cmd");
-		signature = url.searchParams.get("res");
+
+		document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
+				'PKEY1: <code>' + pkey1 + '</code><br>' +
+				'PKEY2: <code>' + pkey2 + '</code><br>' +
+				'</div>';		
 	} catch (e) {
 		document.getElementById('statusBox').innerHTML = '<div class="alert alert-danger">' +
 			'Read error. Please tap the card once again.' +
@@ -100,10 +103,7 @@ ndef.addEventListener("reading", async ({message, serialNumber}) => {
 		return;
 	}
 
-	document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
-			'PKEY1: <code>' + pkey1 + '</code><br>' +
-			'PKEY2: <code>' + pkey2 + '</code><br>' +
-			'</div>';
+
 
 	// document.getElementById('statusBox').innerHTML = '<div class="alert alert-warning">' +
 	// 	'Read completed. Verifying signature...' +
@@ -215,7 +215,11 @@ document.getElementById("authButton").addEventListener("click", async () => {
 
 async function readKeyU2F() {
     let res = await authU2F(fromHexString("02"));
-    window.location.href = '/parse_keys?data=' + buf2hex(res);
+
+
+	document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
+			'Response: <code>' + buf2hex(res) + '</code><br>' +
+			'</div>';	
 }
     </script>
 
