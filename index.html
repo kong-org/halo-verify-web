@@ -1,228 +1,150 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>KONG HaLo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-</head>
-<body>
-<div class="container mt-2 mb-2">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Kong</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="width">
+        <div class="box">
+          <h1>Halo Detected</h1>
 
-    <h3>KONG HaLo Verification</h3>
-    <div id="statusBox">
-        <div class="alert alert-secondary">
-            Use buttons below in order to interact with the tag.
+          <h2>Primary public key</h2>
+          <p id="pkey1">Unknown</p>
+
+          <h2>Secondary Public Key</h2>
+          <p id="pkey2">Unknown</p>
+
+          <a class="button" onClick="readKeyU2F();" >Verify</a>
+
+          <span id="message">Verification coming soon</span>
         </div>
+
+        <svg
+          width="54"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 54 17"
+        >
+          <path
+            d="M12.338 16.713h-4.9L4.42 9.143l.12 7.57H0V.298h4.54l-.119 7.038L7.1.298h4.791l-3.626 7.92 4.073 8.495Zm13.154-8.155c0 2.502-.585 4.537-1.753 6.103C22.577 16.221 21.064 17 19.198 17c-1.655 0-3.075-.599-4.258-1.797-1.488-1.516-2.232-3.792-2.232-6.825 0-2.906.777-5.128 2.33-6.666C16.192.57 17.561 0 19.143 0c1.939 0 3.481.773 4.628 2.318 1.147 1.545 1.72 3.625 1.72 6.24Zm-4.715.032c0-2.97-.537-4.454-1.612-4.454-.537 0-.965.39-1.285 1.17-.312.722-.468 1.785-.468 3.189 0 1.382.147 2.454.441 3.216.294.762.702 1.143 1.225 1.143.537 0 .951-.376 1.241-1.127.305-.752.458-1.797.458-3.137Zm6.653 8.123V.298h4.334L34.04 6.06l.42 1.17c.155.439.328.946.516 1.52l.469 1.446a121.693 121.693 0 0 1-.382-3.658 30.671 30.671 0 0 1-.13-2.551V.297h4.334v16.416h-4.334l-2.287-6.039a72.53 72.53 0 0 1-.648-1.813c-.192-.563-.361-1.1-.506-1.61a99.78 99.78 0 0 1 .207 3.02c.043.857.065 1.608.065 2.253v4.189H27.43Zm20.232-9.494H54v.68c0 3.161-.483 5.437-1.448 6.826C51.499 16.242 49.942 17 47.88 17c-2.025 0-3.615-.744-4.77-2.233-1.146-1.502-1.72-3.565-1.72-6.187 0-2.658.577-4.753 1.732-6.284C44.276.766 45.855 0 47.858 0c2.657 0 4.585 1.354 5.783 4.061l-4.4 1.574c-.065-.518-.216-.927-.452-1.228-.236-.301-.531-.452-.887-.452-1.249 0-1.873 1.676-1.873 5.029 0 1.424.138 2.46.414 3.104.276.645.715.968 1.317.968.24 0 .458-.057.654-.17a1.47 1.47 0 0 0 .495-.479c.135-.205.24-.455.316-.75.076-.293.114-.621.114-.983h-1.677V7.22Z"
+            fill="#040202"
+          />
+        </svg>
+      </div>
     </div>
-    
-    <p>Webpage was not opened through NDEF.</p>
-    <button onClick="readKeyU2F();" class="btn btn-primary">Detect tag using U2F</button>
-    
 
     <script>
-const fromHexString = hexString =>
-    new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+      setTimeout(function () {
+        document.querySelector("body").classList.add("ready");
+      }, 400);
 
-function buf2hex(buffer) { // buffer is an ArrayBuffer
-	return [...new Uint8Array(buffer)]
-		.map(x => x.toString(16).padStart(2, '0'))
-		.join('');
-}
+      const fromHexString = hexString =>
+          new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
-async function authU2F(reqx) {
-	var req = {"publicKey": {
-		"allowCredentials": [
-			{
-				"id": reqx,
-				"transports": ['nfc'],
-				"type": "public-key"
-			}
-		],
-		"challenge": new Uint8Array([113, 241, 176, 49, 249, 113, 39, 237, 135, 170, 177, 61, 15, 14, 105, 236, 120, 140, 4, 41, 65, 225, 107, 63, 214, 129, 133, 223, 169, 200, 21, 88]),
-		"rpId": "eth.vrfy.ch",
-		"timeout": 60000,
-		"userVerification": "discouraged"
-	}};
+      function buf2hex(buffer) { // buffer is an ArrayBuffer
+        return [...new Uint8Array(buffer)]
+          .map(x => x.toString(16).padStart(2, '0'))
+          .join('');
+      }
 
-	var xdd = await navigator.credentials.get(req);
-	return xdd.response.signature;
-}
+      async function authU2F(reqx) {
+        var req = {"publicKey": {
+          "allowCredentials": [
+            {
+              "id": reqx,
+              "transports": ['nfc'],
+              "type": "public-key"
+            }
+          ],
+          "challenge": new Uint8Array([113, 241, 176, 49, 249, 113, 39, 237, 135, 170, 177, 61, 15, 14, 105, 236, 120, 140, 4, 41, 65, 225, 107, 63, 214, 129, 133, 223, 169, 200, 21, 88]),
+          "rpId": "eth.vrfy.ch",
+          "timeout": 60000,
+          "userVerification": "discouraged"
+        }};
 
-async function authBtnU2F() {
-	var req = fromHexString("0101abc1898af1b0cf120f5d372d26453c28191d2ba81cbc317c7afa6da516105ccd");
-	// alert(buf2hex(req));
-	var res = await auth(req);
+        var xdd = await navigator.credentials.get(req);
+        return xdd.response.signature;
+      }
 
-	console.log(buf2hex(res));
-	alert(buf2hex(res));
-}
+      async function authBtnU2F() {
+        var req = fromHexString("0101abc1898af1b0cf120f5d372d26453c28191d2ba81cbc317c7afa6da516105ccd");
+        // alert(buf2hex(req));
+        var res = await auth(req);
 
-let genChallenge = new Uint8Array(2 + 32);
-crypto.getRandomValues(genChallenge);
-genChallenge[0] = 1;
-genChallenge[1] = 1 + (genChallenge[1] % 2); // key number to use (random: 1 or 2)
+        console.log(buf2hex(res));
+        alert(buf2hex(res));
+      }
 
-genChallenge = buf2hex(genChallenge);
+      let genChallenge = new Uint8Array(2 + 32);
+      crypto.getRandomValues(genChallenge);
+      genChallenge[0] = 1;
+      genChallenge[1] = 1 + (genChallenge[1] % 2); // key number to use (random: 1 or 2)
 
-let ndef;
-let ctrl;
+      genChallenge = buf2hex(genChallenge);
 
-try {
-	ndef = new NDEFReader();
-	ctrl = new AbortController();
+      let ndef;
+      let ctrl;
 
-ndef.addEventListener("readingerror", () => {
-	document.getElementById('statusBox').innerHTML = '<div class="alert alert-danger">' +
-		'Read error. Please remove the card from the reader.<br>' +
-		'<button onclick="window.location.reload(false);" class="btn btn-secondary">Try again</button></div>';
-});
+      try {
+        ndef = new NDEFReader();
+        ctrl = new AbortController();
 
-ndef.addEventListener("reading", async ({message, serialNumber}) => {
-	let pkey1;
-	let pkey2;
-	let challenge;
-	let signature;
+      ndef.addEventListener("readingerror", () => {
+        document.getElementById('message').innerHTML = 'Read error. Please try again.'
+      });
 
-	try {
-		let url = new URL(new TextDecoder("utf-8").decode(message.records[0].data));
-		let myURL = new URL(window.location.href);
+      ndef.addEventListener("reading", async ({message, serialNumber}) => {
+        let pkey1;
+        let pkey2;
+        let challenge;
+        let signature;
 
-		pkey1 = myURL.searchParams.get("pkey1");
-		pkey2 = myURL.searchParams.get("pkey2");
+        try {
+          let url = new URL(new TextDecoder("utf-8").decode(message.records[0].data));
+          let myURL = new URL(window.location.href);
 
-		document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
-				'PKEY1: <code>' + pkey1 + '</code><br>' +
-				'PKEY2: <code>' + pkey2 + '</code><br>' +
-				'</div>';		
-	} catch (e) {
-		document.getElementById('statusBox').innerHTML = '<div class="alert alert-danger">' +
-			'Read error. Please tap the card once again.' +
-			'</div>';
-		return;
-	}
+          pkey1 = myURL.searchParams.get("pkey1");
+          pkey2 = myURL.searchParams.get("pkey2");
 
+          document.getElementById('pkey1').innerHTML = pkey1
+          document.getElementById('pkey2').innerHTML = pkey2
+        } catch (e) {
+          document.getElementById('message').innerHTML = 'Read error. Please try again.'
+          return;
+        }
 
+      });
 
-	// document.getElementById('statusBox').innerHTML = '<div class="alert alert-warning">' +
-	// 	'Read completed. Verifying signature...' +
-	// 	'</div>';
+      document.getElementById("authButton").addEventListener("click", async () => {
+        document.getElementById("authButton").disabled = true;
+        document.getElementById("authButtonU2F").disabled = true;
+        document.getElementById('message').innerHTML = 'Please tap the card and hold it.'
 
-	// fetch('/verify', {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/json',
-	// 	},
-	// 	body: JSON.stringify({
-	// 		pkey1: pkey1,
-	// 		pkey2: pkey2,
-	// 		challenge: challenge,
-	// 		signature: signature
-	// 	}),
-	// })
-	// 	.then(response => response.json())
-	// 	.then(data => {
-	// 		document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
-	// 			'PKEY1: <code>' + pkey1 + '</code><br>' +
-	// 			'PKEY2: <code>' + pkey2 + '</code><br>' +
-	// 			'Gen. challenge: <code>' + genChallenge + '</code><br>' +
-	// 			'Read challenge: <code>' + challenge + '</code><br>' +
-	// 			'Signature: <code>' + signature + '</code><br>' +
-	// 			'Valid (server side): <code>' + (data.valid ? 'VALID' : 'INVALID') + '</code>' +
-	// 			'</div>';
-	// 	})
-	// 	.catch((error) => {
-	// 		document.getElementById('statusBox').innerHTML = '<div class="alert alert-danger">' +
-	// 			'Error: ' + error +
-	// 			'</div>';
-	// 	});
-});
+        try {
+          let challenge = fromHexString(genChallenge);
+          await ndef.write({records: [{recordType: "unknown", data: challenge}]});
 
-document.getElementById("authButton").addEventListener("click", async () => {
-	document.getElementById("authButton").disabled = true;
-	document.getElementById("authButtonU2F").disabled = true;
-	document.getElementById('statusBox').innerHTML = '<div class="alert alert-info">' +
-		'Please tap the card and hold it.<br>' +
-		'Gen. challenge: <code>' + genChallenge + '</code><br>' +
-		'</div>';
+          document.getElementById('message').innerHTML = 'Reading data... Please hold the card.'
 
-	try {
-		let challenge = fromHexString(genChallenge);
-		await ndef.write({records: [{recordType: "unknown", data: challenge}]});
+          await ndef.scan({signal: ctrl.signal});
+        } catch (error) {
+          document.getElementById('message').innerHTML = 'Read error. Please try again.'
+        }
+      });
+      } catch (e) {
+        document.getElementById('message').innerHTML = 'WebNFC not available.';
+      }
 
-		document.getElementById('statusBox').innerHTML = '<div class="alert alert-warning">' +
-			'Reading data... Please hold the card.' +
-			'</div>';
+      async function readKeyU2F() {
+        let res = await authU2F(fromHexString("02"));
 
-		await ndef.scan({signal: ctrl.signal});
-	} catch (error) {
-		document.getElementById('statusBox').innerHTML = '<div class="alert alert-danger">' +
-			'Read error. Please remove the card from the reader.<br>' + error + '<br>' +
-			'<button onclick="window.location.reload(false);" class="btn btn-secondary">Try again</button>' +
-			'</div>';
-	}
-});
-} catch (e) {
-	document.getElementById('statusBox').innerHTML = '<div class="alert alert-warning">' +
-		'WebNFC not available. U2F may still work. Please use buttons below to interact with the tag.</div>';
-}
-
-// async function authBtnU2F() {
-// 	document.getElementById("authButton").disabled = true;
-// 	document.getElementById("authButtonU2F").disabled = true;
-
-// 	document.getElementById('statusBox').innerHTML = '<div class="alert alert-info">' +
-// 		'Please tap the card and hold it.<br>' +
-// 		'Gen. challenge: <code>' + genChallenge + '</code><br>' +
-// 		'</div>';
-
-// 	var req = fromHexString(genChallenge);
-// 	var res = await authU2F(req);
-
-// 	let qs = new URLSearchParams(window.location.search);
-// 	let pkey1 = qs.get("pkey1");
-// 	let pkey2 = qs.get("pkey2");
-
-// 	fetch('/verify', {
-// 		method: 'POST',
-// 		headers: {
-// 			'Content-Type': 'application/json',
-// 		},
-// 		body: JSON.stringify({
-// 			pkey1: pkey1,
-// 			pkey2: pkey2,
-// 			challenge: genChallenge,
-// 			signature: buf2hex(res)
-// 		}),
-// 	})
-// 		.then(response => response.json())
-// 		.then(data => {
-// 			document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
-// 				'PKEY1: <code>' + pkey1 + '</code><br>' +
-// 				'PKEY2: <code>' + pkey2 + '</code><br>' +
-// 				'Gen. challenge: <code>' + genChallenge + '</code><br>' +
-// 				'Signature: <code>' + buf2hex(res) + '</code><br>' +
-// 				'Valid (server side): <code>' + (data.valid ? 'VALID' : 'INVALID') + '</code>' +
-// 				'</div>';
-// 		})
-// 		.catch((error) => {
-// 			document.getElementById('statusBox').innerHTML = '<div class="alert alert-danger">' +
-// 				'Error: ' + error +
-// 				'</div>';
-// 		});
-// }
-
-async function readKeyU2F() {
-    let res = await authU2F(fromHexString("02"));
-
-
-	document.getElementById('statusBox').innerHTML = '<div class="alert alert-success" style="word-break: break-all;">' +
-			'Response: <code>' + buf2hex(res) + '</code><br>' +
-			'</div>';	
-}
+        document.getElementById('message').innerHTML = buf2hex(res)
+      }
     </script>
-
-</div>
-</body>
+  </body>
 </html>
