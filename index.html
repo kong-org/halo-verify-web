@@ -71,54 +71,50 @@
         return xdd.response.signature;
       }
 
-      async function authBtnU2F() {
-        var req = fromHexString("0101abc1898af1b0cf120f5d372d26453c28191d2ba81cbc317c7afa6da516105ccd");
-        // alert(buf2hex(req));
-        var res = await auth(req);
+      // async function authBtnU2F() {
+      //   var req = fromHexString("0101abc1898af1b0cf120f5d372d26453c28191d2ba81cbc317c7afa6da516105ccd");
+      //   var res = await auth(req);
+      // }
 
-        console.log(buf2hex(res));
-        alert(buf2hex(res));
-      }
+      // let genChallenge = new Uint8Array(2 + 32);
+      // crypto.getRandomValues(genChallenge);
+      // genChallenge[0] = 1;
+      // genChallenge[1] = 1 + (genChallenge[1] % 2); // key number to use (random: 1 or 2)
 
-      let genChallenge = new Uint8Array(2 + 32);
-      crypto.getRandomValues(genChallenge);
-      genChallenge[0] = 1;
-      genChallenge[1] = 1 + (genChallenge[1] % 2); // key number to use (random: 1 or 2)
+      // genChallenge = buf2hex(genChallenge);
 
-      genChallenge = buf2hex(genChallenge);
+      // let ndef;
+      // let ctrl;
 
-      let ndef;
-      let ctrl;
+      // try {
+      //   ndef = new NDEFReader();
+      //   ctrl = new AbortController();
 
-      try {
-        ndef = new NDEFReader();
-        ctrl = new AbortController();
+      // ndef.addEventListener("readingerror", () => {
+      //   document.getElementById('message').innerHTML = 'Read error. Please try again.'
+      // });
 
-      ndef.addEventListener("readingerror", () => {
-        document.getElementById('message').innerHTML = 'Read error. Please try again.'
-      });
+      // ndef.addEventListener("reading", async ({message, serialNumber}) => {
+      //   let pkey1;
+      //   let pkey2;
+      //   let challenge;
+      //   let signature;
 
-      ndef.addEventListener("reading", async ({message, serialNumber}) => {
-        let pkey1;
-        let pkey2;
-        let challenge;
-        let signature;
+      //   try {
+      //     let url = new URL(new TextDecoder("utf-8").decode(message.records[0].data));
+      //     let myURL = new URL(window.location.href);
 
-        try {
-          let url = new URL(new TextDecoder("utf-8").decode(message.records[0].data));
-          let myURL = new URL(window.location.href);
+      //     pkey1 = myURL.searchParams.get("pkey1");
+      //     pkey2 = myURL.searchParams.get("pkey2");
 
-          pkey1 = myURL.searchParams.get("pkey1");
-          pkey2 = myURL.searchParams.get("pkey2");
+      //     document.getElementById('pkey1').innerHTML = pkey1
+      //     document.getElementById('pkey2').innerHTML = pkey2
+      //   } catch (e) {
+      //     document.getElementById('message').innerHTML = 'Read error. Please try again.'
+      //     return;
+      //   }
 
-          document.getElementById('pkey1').innerHTML = pkey1
-          document.getElementById('pkey2').innerHTML = pkey2
-        } catch (e) {
-          document.getElementById('message').innerHTML = 'Read error. Please try again.'
-          return;
-        }
-
-      });
+      // });
 
       // document.getElementById("authButton").addEventListener("click", async () => {
       //   document.getElementById("authButton").disabled = true;
