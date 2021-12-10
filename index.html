@@ -120,25 +120,25 @@
 
       });
 
-      document.getElementById("authButton").addEventListener("click", async () => {
-        document.getElementById("authButton").disabled = true;
-        document.getElementById("authButtonU2F").disabled = true;
-        document.getElementById('message').innerHTML = 'Please tap the card and hold it.'
+      // document.getElementById("authButton").addEventListener("click", async () => {
+      //   document.getElementById("authButton").disabled = true;
+      //   document.getElementById("authButtonU2F").disabled = true;
+      //   document.getElementById('message').innerHTML = 'Please tap the card and hold it.'
 
-        try {
-          let challenge = fromHexString(genChallenge);
-          await ndef.write({records: [{recordType: "unknown", data: challenge}]});
+      //   try {
+      //     let challenge = fromHexString(genChallenge);
+      //     await ndef.write({records: [{recordType: "unknown", data: challenge}]});
 
-          document.getElementById('message').innerHTML = 'Reading data... Please hold the card.'
+      //     document.getElementById('message').innerHTML = 'Reading data... Please hold the card.'
 
-          await ndef.scan({signal: ctrl.signal});
-        } catch (error) {
-          document.getElementById('message').innerHTML = 'Read error. Please try again.'
-        }
-      });
-      } catch (e) {
-        document.getElementById('message').innerHTML = 'WebNFC not available.';
-      }
+      //     await ndef.scan({signal: ctrl.signal});
+      //   } catch (error) {
+      //     document.getElementById('message').innerHTML = 'Read error. Please try again.'
+      //   }
+      // });
+      // } catch (e) {
+      //   document.getElementById('message').innerHTML = 'WebNFC not available.';
+      // }
 
       async function readKeyU2F() {
         let res = await authU2F(fromHexString("02"));
