@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style.css" />
-    <title>Kong</title>
+    <title>HaLo Verify</title>
   </head>
   <body>
     <div class="wrapper">
@@ -13,13 +13,13 @@
         <div class="box">
           <h1>Halo Detected</h1>
 
-          <h2>Primary public key</h2>
+          <h2>Primary Public Key Hash</h2>
           <p id="pkey1">Unknown</p>
 
-          <h2>Secondary Public Key</h2>
+          <h2>Secondary Public Key Hash</h2>
           <p id="pkey2">Unknown</p>
 
-          <button onClick="readKeyU2F();" class="button">Verify</button>
+          <a class="button" onClick="readKeyU2F();" >Verify</a>
 
           <span id="message">Verification coming soon</span>
         </div>
@@ -38,10 +38,55 @@
       </div>
     </div>
 
+    <script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js" type="text/javascript">
+    </script>
     <script>
       setTimeout(function () {
         document.querySelector("body").classList.add("ready");
       }, 400);
+
+      let currentURL = new URL(window.location.href);
+
+      // TODO: parse this data.
+      staticHaloData = currentURL.searchParams.get("static");
+
+      primaryPublicKeyLength = parseInt('0x' + staticHaloData.slice(0, 2)) * 2;
+      primaryPublicKeyRaw = staticHaloData.slice(2, primaryPublicKeyLength + 2);
+      primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
+
+      secondaryPublicKeyLength = parseInt(
+        '0x' + staticHaloData.slice(
+          primaryPublicKeyLength + 2, 
+          primaryPublicKeyLength + 4)) * 2;
+      
+      secondaryPublicKeyRaw = staticHaloData.slice(
+        primaryPublicKeyLength + 4, 
+        primaryPublicKeyLength + 
+        secondaryPublicKeyLength + 4);
+
+      secondaryPublicKeyHash = ethers.utils.sha256('0x' + secondaryPublicKeyRaw.slice(2))
+
+      tertiaryPublicKeyLength = parseInt(
+        '0x' + staticHaloData.slice(
+          primaryPublicKeyLength + 
+          secondaryPublicKeyLength + 4, 
+          primaryPublicKeyLength + 
+          secondaryPublicKeyLength + 6)) * 2;
+      
+      var tertiaryPublicKeyRaw = null;
+
+      if (tertiaryPublicKeyLength > 0) {
+        tertiaryPublicKeyRaw = staticHaloData.slice(
+          primaryPublicKeyLength + 
+          secondaryPublicKeyLength + 6, 
+          primaryPublicKeyLength + 
+          secondaryPublicKeyLength + 
+          tertiaryPublicKeyLength + 6
+        );        
+      }
+
+      document.getElementById('pkey1').innerHTML = primaryPublicKeyHash
+      document.getElementById('pkey2').innerHTML = secondaryPublicKeyHash
 
       const fromHexString = hexString =>
           new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -69,6 +114,12 @@
 
         var xdd = await navigator.credentials.get(req);
         return xdd.response.signature;
+      }
+
+      async function readKeyU2F() {
+        let res = await authU2F(fromHexString("02"));
+
+        document.getElementById('message').innerHTML = buf2hex(res)
       }
 
       // async function authBtnU2F() {
@@ -136,11 +187,6 @@
       //   document.getElementById('message').innerHTML = 'WebNFC not available.';
       // }
 
-      async function readKeyU2F() {
-        let res = await authU2F(fromHexString("02"));
-
-        document.getElementById('message').innerHTML = buf2hex(res)
-      }
     </script>
   </body>
 </html>
