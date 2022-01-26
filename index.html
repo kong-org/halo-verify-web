@@ -111,7 +111,7 @@
 
       function prepareVerify(staticHaloData) {
         console.log(`halo data: ${staticHaloData}`)
-        keys = parseKeys(staticHaloData);
+        keys = parseKeys(buf2hex(staticHaloData));
 
         document.getElementById('scan').innerHTML = "Verify"
         document.getElementById('scan').onclick = function () {
