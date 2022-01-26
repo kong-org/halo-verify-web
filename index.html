@@ -134,7 +134,7 @@
 
       function verifySignature(digest, signature, publicKey) {
         console.log(`call verify signature: ${digest}, ${signature}, ${publicKey}`);
-        const recoveredPublicKey = ethers.utils.recoverPublicKey(digest, signature);
+        const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, '0x' + signature);
         console.log(`recovered public key: ${recoveredPublicKey}`);
         if ('0x' + publicKey == recoveredPublicKey) {
           console.log(`verify true`)
@@ -143,7 +143,6 @@
           console.log(`verify false`)
         }
       }
-
 
       if(staticHaloData) {
         prepareVerify(staticHaloData);
@@ -193,6 +192,8 @@
         let qs = new URLSearchParams(window.location.search);
         let pkey1 = qs.get("pkey1");
         let pkey2 = qs.get("pkey2");
+
+        verifySignature(challenge, buf2hex(res), pkey1);
 
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
