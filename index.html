@@ -13,13 +13,13 @@
         <div class="box">
           <h1>Halo Detected</h1>
 
-          <h2>Primary Public Key Hash</h2>
+          <h2 id="title1">Primary Public Key Hash</h2>
           <p id="pkey1">Unknown</p>
 
-          <h2>Secondary Public Key Hash</h2>
+          <h2 id="title2">Secondary Public Key Hash</h2>
           <p id="pkey2">Unknown</p>
 
-          <a class="button" onClick="readKeyU2F();" >Verify</a>
+          <a id="scan" class="button" onClick="readKeyU2F();">Scan</a>
         </div>
 
         <svg
@@ -47,47 +47,6 @@
 
       let currentURL = new URL(window.location.href);
 
-      // TODO: parse this data.
-      staticHaloData = currentURL.searchParams.get("static");
-
-      primaryPublicKeyLength = parseInt('0x' + staticHaloData.slice(0, 2)) * 2;
-      primaryPublicKeyRaw = staticHaloData.slice(2, primaryPublicKeyLength + 2);
-      primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
-
-      secondaryPublicKeyLength = parseInt(
-        '0x' + staticHaloData.slice(
-          primaryPublicKeyLength + 2, 
-          primaryPublicKeyLength + 4)) * 2;
-      
-      secondaryPublicKeyRaw = staticHaloData.slice(
-        primaryPublicKeyLength + 4, 
-        primaryPublicKeyLength + 
-        secondaryPublicKeyLength + 4);
-
-      secondaryPublicKeyHash = ethers.utils.sha256('0x' + secondaryPublicKeyRaw.slice(2))
-
-      tertiaryPublicKeyLength = parseInt(
-        '0x' + staticHaloData.slice(
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 4, 
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 6)) * 2;
-      
-      var tertiaryPublicKeyRaw = null;
-
-      if (tertiaryPublicKeyLength > 0) {
-        tertiaryPublicKeyRaw = staticHaloData.slice(
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 6, 
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 
-          tertiaryPublicKeyLength + 6
-        );        
-      }
-
-      document.getElementById('pkey1').innerHTML = primaryPublicKeyHash
-      document.getElementById('pkey2').innerHTML = secondaryPublicKeyHash
-
       const fromHexString = hexString =>
           new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 
@@ -95,6 +54,84 @@
         return [...new Uint8Array(buffer)]
           .map(x => x.toString(16).padStart(2, '0'))
           .join('');
+      }
+
+      function parseKeys(payload) {
+        primaryPublicKeyLength = parseInt('0x' + staticHaloData.slice(0, 2)) * 2;
+        primaryPublicKeyRaw = staticHaloData.slice(2, primaryPublicKeyLength + 2);
+        primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
+
+        secondaryPublicKeyLength = parseInt(
+          '0x' + staticHaloData.slice(
+            primaryPublicKeyLength + 2, 
+            primaryPublicKeyLength + 4)) * 2;
+        
+        secondaryPublicKeyRaw = staticHaloData.slice(
+          primaryPublicKeyLength + 4, 
+          primaryPublicKeyLength + 
+          secondaryPublicKeyLength + 4);
+
+        secondaryPublicKeyHash = ethers.utils.sha256('0x' + secondaryPublicKeyRaw.slice(2))
+
+        tertiaryPublicKeyLength = parseInt(
+          '0x' + staticHaloData.slice(
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 4, 
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 6)) * 2;
+        
+        var tertiaryPublicKeyRaw = null;
+        var tertiaryPublicKeyHash = null;
+
+        if (tertiaryPublicKeyLength > 0) {
+          tertiaryPublicKeyRaw = staticHaloData.slice(
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 6, 
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 
+            tertiaryPublicKeyLength + 6
+          );
+          
+          tertiaryPublicKeyHash = ethers.utils.sha256('0x' + tertiaryPublicKeyRaw.slice(2))
+        }
+
+        const keys = {
+          'primaryPublicKeyHash': primaryPublicKeyHash,
+          'primaryPublicKeyRaw': primaryPublicKeyRaw,
+          'secondaryPublicKeyHash': secondaryPublicKeyHash,
+          'secondaryPublicKeyRaw': secondaryPublicKeyRaw,
+          'tertiaryPublicKeyHash': tertiaryPublicKeyHash,
+          'tertiaryPublicKeyRaw': tertiaryPublicKeyRaw
+        }
+
+        return keys
+      }
+
+      const staticHaloData = currentURL.searchParams.get("static");
+
+      function prepareVerify(staticHaloData) {
+        keys = parseKeys(staticHaloData);
+
+        document.getElementById('scan').innerHTML = "Verify"
+        document.getElementById('scan').onclick = generateSig();
+        document.getElementById('pkey1').innerHTML = keys.primaryPublicKeyHash
+        document.getElementById('pkey2').innerHTML = keys.secondaryPublicKeyHash
+      }
+
+      function genRandomChallenge() {
+        let genChallenge = new Uint8Array(2 + 32);
+        crypto.getRandomValues(genChallenge);
+        genChallenge[0] = 1;
+        genChallenge[1] = 1 + (genChallenge[1] % 2); // key number to use (random: 1 or 2)
+
+        genChallenge = buf2hex(genChallenge);
+
+        return genChallenge
+      }
+
+
+      if(staticHaloData) {
+        prepareVerify(staticHaloData);
       }
 
       async function authU2F(reqx) {
@@ -116,16 +153,36 @@
         return xdd.response.signature;
       }
 
+      // This runs a command to read out the public keys.
       async function readKeyU2F() {
         let res = await authU2F(fromHexString("02"));
 
         // TODO verify the signature from the result.
         // 4104244D15B9E21146765B855D83242CC57900379DB119AC1CC6ADD4BE5AB36037C007DA1531EC2725EF0565CB688482DE534933C5F53D75914052BB19BC1283B1114104CD0C47F2F215B23A47B91D749573FA1C151C9418E60D3CD62A532EEE5A7C14B9492F44FB4B51364B8590742A1FDCFF653F3FB1D78C299D51AD74232CD4A1400C
-        document.getElementById('message').innerHTML = buf2hex(`response: ${res}`)
+        //document.getElementById('message').innerHTML = buf2hex(`response: ${res}`)
+        prepareVerify(res);
       }
 
-      function verifySig(res) {
-        // TODO: slice response to get signature out
+      async function generateSig() {
+
+        document.getElementById('title1').innerHTML = "Challenge"
+        document.getElementById('title2').innerHTML = "Signature"
+
+        document.getElementById('statusBox').innerHTML = '<div class="alert alert-info">' +
+          'Please tap the card and hold it.<br>' +
+          'Gen. challenge: <code>' + genRandomChallenge() + '</code><br>' +
+          '</div>';
+
+        var req = fromHexString(genRandomChallenge());
+        var res = await authU2F(req);
+
+        let qs = new URLSearchParams(window.location.search);
+        let pkey1 = qs.get("pkey1");
+        let pkey2 = qs.get("pkey2");
+
+        document.getElementById('pkey1').innerHTML = req
+        document.getElementById('pkey2').innerHTML = buf2hex(res)
+
       }
 
       // async function authBtnU2F() {
