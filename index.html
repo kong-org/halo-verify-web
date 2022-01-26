@@ -110,6 +110,7 @@
       const staticHaloData = currentURL.searchParams.get("static");
 
       function prepareVerify(staticHaloData) {
+        console.log(`halo data: ${staticHaloData}`)
         keys = parseKeys(staticHaloData);
 
         document.getElementById('scan').innerHTML = "Verify"
