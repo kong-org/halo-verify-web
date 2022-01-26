@@ -11,7 +11,7 @@
     <div class="wrapper">
       <div class="width">
         <div class="box">
-          <h1>Halo Detected</h1>
+          <h1 id="headerMessage">Halo Detected</h1>
 
           <h2 id="title1">Primary Public Key Hash</h2>
           <p id="pkey1">Unknown</p>
@@ -130,6 +130,18 @@
         genChallenge = buf2hex(genChallenge);
 
         return genChallenge
+      }
+
+      function verifySignature(digest, signature, publicKey) {
+        console.log(`call verify signature: ${digest}, ${signature}, ${publicKey}`);
+        const recoveredPublicKey = ethers.utils.recoverPublicKey(digest, signature);
+        console.log(`recovered public key: ${recoveredPublicKey}`);
+        if ('0x' + publicKey == recoveredPublicKey) {
+          console.log(`verify true`)
+          document.getElementById('title2').innerHTML = "HaLo Verified"
+        } else {
+          console.log(`verify false`)
+        }
       }
 
 
