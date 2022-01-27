@@ -107,36 +107,38 @@
         return keys
       }
 
-      function toHexString(byteArray) {
-        return Array.from(byteArray, function(byte) {
-          return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-        }).join('')
-      }
-
+      // This shit is nasty.
       function unpackDERSignature(sig) {
-        let header = sig.splice(0, 2);
-
-        if (header[0] !== 0x30) {
+        let header0 = sig.slice(0, 2);
+        if (parseInt('0x' + header0) !== 0x30) {
           throw Error('Invalid header.');
         }
 
-        let header_r = sig.splice(0, 2);
+        let header_r0 = sig.slice(4, 6);
+        let header_r1 = sig.slice(6, 8);
 
-        if (header_r[0] !== 0x02) {
+        if (parseInt('0x' + header_r0) !== 0x02) {
           throw Error('Invalid header (2).');
         }
 
-        let r = sig.splice(0, header_r[1]);
-        let header_s = sig.splice(0, 2);
+        let length_r = parseInt('0x' + header_r1) * 2;
+        let r = sig.slice(8, length_r + 8);
+      
+        let header_s0 = sig.slice(length_r + 8, length_r + 10);
+        let header_s1 = sig.slice(length_r + 10, length_r + 12);
 
-        if (header_s[0] !== 0x02) {
+        console.log(header_s1)
+
+        if (parseInt('0x' + header_s0) !== 0x02) {
           throw Error('Invalid header (2).');
         }
 
-        let s = sig.splice(0, header_s[1]);
+        console.log(length_r + 12)
+        console.log(parseInt('0x' + header_s1) * 2)
+        let s = sig.slice(length_r + 12, length_r + 12 + parseInt('0x' + header_s1) * 2);
 
-        console.log(toHexString(r));
-        console.log(toHexString(s));
+        console.log(r);
+        console.log(s);
         return {r, s};
       }
 
@@ -224,7 +226,7 @@
 
         // TODO: select the key we sign with.
         let publickKey = document.getElementById("pkey1").innerText;
-        let signature = new Uint16Array(res);
+        let signature = buf2hex(res);
 
         console.log(`publickey is: ${publickKey}`)
         console.log(`signature is ${signature}`)
