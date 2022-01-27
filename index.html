@@ -139,6 +139,10 @@
 
         console.log(s.length)
 
+        if (r.length == 66) {
+          r = r.slice(2, 130)
+        }
+
         if (s.length == 66) {
           s = s.slice(2, 130)
         }
@@ -174,7 +178,10 @@
       }
 
       function verifySignature(digest, signature, publicKey) {
-        let sig = ethers.utils.splitSignature(signature)
+        console.log(`digest: ${digest}`);
+        console.log(`signature: ${signature}`);
+        console.log(`publicKey: ${publicKey}`)
+        let sig = ethers.utils.splitSignature('0x' + signature)
         console.log(sig)
         console.log(`call verify signature: ${digest}, ${sig}, ${publicKey}`);
         const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, sig);
@@ -236,11 +243,7 @@
         let publickKey = document.getElementById("pkey1").innerText;
         let signature = buf2hex(res);
 
-        console.log(`publickey is: ${publickKey}`)
-        console.log(`signature is ${signature}`)
-
         // TODO: challenge is really challengeCmd, rename.
-        console.log(`challenge is: ${challenge}`);
         verifySignature(challenge.slice(4, -1), unpackDERSignature(signature), publickKey);
 
         document.getElementById('pkey1').innerHTML = challenge
