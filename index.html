@@ -109,26 +109,26 @@
 
       function unpackDERSignature(sig) {
         console.log(`unpack der called on: ${sig}`)
-        let header = sig.splice(0, 2);
+        let header = sig.slice(0, 2);
 
         if (header[0] !== 0x30) {
           throw Error('Invalid header.');
         }
 
-        let header_r = sig.splice(0, 2);
+        let header_r = sig.splice(2, 4);
 
         if (header_r[0] !== 0x02) {
           throw Error('Invalid header (2).');
         }
 
-        let r = sig.splice(0, header_r[1]);
-        let header_s = sig.splice(0, 2);
+        let r = sig.slice(4, header_r[1]);
+        let header_s = sig.slice(header_r[1], header_r[1] + 2);
 
         if (header_s[0] !== 0x02) {
           throw Error('Invalid header (2).');
         }
 
-        let s = sig.splice(0, header_s[1]);
+        let s = sig.slice(header_r[1] + 2, header_s[1]);
 
         console.log(bytesToHex(r));
         console.log(bytesToHex(s));
