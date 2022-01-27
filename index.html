@@ -193,7 +193,8 @@
         let pkey1 = qs.get("pkey1");
         let pkey2 = qs.get("pkey2");
 
-        verifySignature(challenge, buf2hex(res), pkey1);
+        // TODO: challenge is really challengeCmd, rename.
+        verifySignature(challenge.slice(4, -1), buf2hex(res), pkey1);
 
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
