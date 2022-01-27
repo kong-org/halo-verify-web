@@ -107,6 +107,12 @@
         return keys
       }
 
+      function toHexString(byteArray) {
+        return Array.from(byteArray, function(byte) {
+          return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+        }).join('')
+      }
+
       function unpackDERSignature(sig) {
         let header = sig.splice(0, 2);
 
@@ -129,8 +135,8 @@
 
         let s = sig.splice(0, header_s[1]);
 
-        console.log(bytesToHex(r));
-        console.log(bytesToHex(s));
+        console.log(toHexString(r));
+        console.log(toHexString(s));
         return {r, s};
       }
 
@@ -217,14 +223,14 @@
         var res = await authU2F(req);
 
         // TODO: select the key we sign with.
-        let publickKey = document.getElementById("pkey1").value;
+        let publickKey = document.getElementById("pkey1").innerText;
         let signature = new Uint8Array(res);
 
         console.log(`publickey is: ${publickKey}`)
         console.log(`signature is ${signature}`)
 
         // TODO: challenge is really challengeCmd, rename.
-        verifySignature(challenge.slice(4, -1), unpackDERSignature(signature), publickKey);
+        verifySignature(challenge.slice(4, -1), unpackDERSignature([signature]), publickKey);
 
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
