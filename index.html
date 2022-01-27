@@ -107,8 +107,8 @@
         return keys
       }
 
-
       function unpackDERSignature(sig) {
+        console.log(`unpack der called on: ${sig}`)
         let header = sig.splice(0, 2);
 
         if (header[0] !== 0x30) {
@@ -218,10 +218,13 @@
         var res = await authU2F(req);
 
         // TODO: select the key we sign with.
-        let pkey1 = document.getElementById("pkey1").value;
+        let publickKey = document.getElementById("pkey1").value;
+        let signature = buf2hex(res);
+
+        console.log(`publickey is: ${publickKey}, signature is ${signature}`)
 
         // TODO: challenge is really challengeCmd, rename.
-        verifySignature(challenge.slice(4, -1), unpackDERSignature(buf2hex(res)), pkey1);
+        verifySignature(challenge.slice(4, -1), unpackDERSignature(signature), publickKey);
 
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
