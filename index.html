@@ -137,9 +137,15 @@
         console.log(parseInt('0x' + header_s1) * 2)
         let s = sig.slice(length_r + 12, length_r + 12 + parseInt('0x' + header_s1) * 2);
 
+        console.log(s.length)
+
+        if (s.length == 66) {
+          s = s.slice(2, 130)
+        }
+
         console.log(r);
         console.log(s);
-        return {r, s};
+        return r + s;
       }
 
       const staticHaloData = currentURL.searchParams.get("static");
@@ -168,8 +174,10 @@
       }
 
       function verifySignature(digest, signature, publicKey) {
-        console.log(`call verify signature: ${digest}, ${signature}, ${publicKey}`);
-        const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, '0x' + signature["r"] + signature["s"]);
+        let sig = ethers.utils.splitSignature(signature)
+        console.log(sig)
+        console.log(`call verify signature: ${digest}, ${sig}, ${publicKey}`);
+        const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, sig);
         console.log(`recovered public key: ${recoveredPublicKey}`);
         if ('0x' + publicKey == recoveredPublicKey) {
           console.log(`verify true`)
@@ -232,6 +240,7 @@
         console.log(`signature is ${signature}`)
 
         // TODO: challenge is really challengeCmd, rename.
+        console.log(`challenge is: ${challenge}`);
         verifySignature(challenge.slice(4, -1), unpackDERSignature(signature), publickKey);
 
         document.getElementById('pkey1').innerHTML = challenge
