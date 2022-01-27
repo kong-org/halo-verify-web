@@ -224,13 +224,13 @@
 
         // TODO: select the key we sign with.
         let publickKey = document.getElementById("pkey1").innerText;
-        let signature = new Uint8Array(res);
+        let signature = new Uint16Array(res);
 
         console.log(`publickey is: ${publickKey}`)
         console.log(`signature is ${signature}`)
 
         // TODO: challenge is really challengeCmd, rename.
-        verifySignature(challenge.slice(4, -1), unpackDERSignature([signature]), publickKey);
+        verifySignature(challenge.slice(4, -1), unpackDERSignature(signature), publickKey);
 
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
