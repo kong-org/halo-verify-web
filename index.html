@@ -111,6 +111,8 @@
         console.log(`unpack der called on: ${sig}`)
         let header = sig.slice(0, 2);
 
+        console.log(header)
+
         if (header[0] !== 0x30) {
           throw Error('Invalid header.');
         }
@@ -219,7 +221,7 @@
 
         // TODO: select the key we sign with.
         let publickKey = document.getElementById("pkey1").value;
-        let signature = buf2hex(res);
+        let signature = res;
 
         console.log(`publickey is: ${publickKey}, signature is ${signature}`)
 
