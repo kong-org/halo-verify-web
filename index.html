@@ -107,6 +107,34 @@
         return keys
       }
 
+
+      function unpackDERSignature(sig) {
+        let header = sig.splice(0, 2);
+
+        if (header[0] !== 0x30) {
+          throw Error('Invalid header.');
+        }
+
+        let header_r = sig.splice(0, 2);
+
+        if (header_r[0] !== 0x02) {
+          throw Error('Invalid header (2).');
+        }
+
+        let r = sig.splice(0, header_r[1]);
+        let header_s = sig.splice(0, 2);
+
+        if (header_s[0] !== 0x02) {
+          throw Error('Invalid header (2).');
+        }
+
+        let s = sig.splice(0, header_s[1]);
+
+        console.log(bytesToHex(r));
+        console.log(bytesToHex(s));
+        return {r, s};
+      }
+
       const staticHaloData = currentURL.searchParams.get("static");
 
       function prepareVerify(staticHaloData) {
@@ -134,7 +162,7 @@
 
       function verifySignature(digest, signature, publicKey) {
         console.log(`call verify signature: ${digest}, ${signature}, ${publicKey}`);
-        const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, '0x' + signature);
+        const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, '0x' + signature["r"] + signature["s"]);
         console.log(`recovered public key: ${recoveredPublicKey}`);
         if ('0x' + publicKey == recoveredPublicKey) {
           console.log(`verify true`)
@@ -189,12 +217,11 @@
         var req = fromHexString(challenge);
         var res = await authU2F(req);
 
-        let qs = new URLSearchParams(window.location.search);
-        let pkey1 = qs.get("pkey1");
-        let pkey2 = qs.get("pkey2");
+        // TODO: select the key we sign with.
+        let pkey1 = document.getElementById("pkey1").value;
 
         // TODO: challenge is really challengeCmd, rename.
-        verifySignature(challenge.slice(4, -1), buf2hex(res), pkey1);
+        verifySignature(challenge.slice(4, -1), unpackDERSignature(buf2hex(res)), pkey1);
 
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
