@@ -218,7 +218,7 @@
 
         // TODO: select the key we sign with.
         let publickKey = document.getElementById("pkey1").value;
-        let signature = res;
+        let signature = new Uint8Array(res);
 
         console.log(`publickey is: ${publickKey}`)
         console.log(`signature is ${signature}`)
