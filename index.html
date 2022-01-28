@@ -172,16 +172,20 @@
 
       function genRandomChallenge(keySlot) {
         // let genChallenge = new Uint8Array(2 + 32);
+        console.log(`genRandomChallenge called`)
         let genChallenge = ethers.utils.hashMessage("Hello World")
         // crypto.getRandomValues(genChallenge);
         console.log(genChallenge)
-        genChallenge = genChallenge.slice(2, -1)
+        genChallenge = genChallenge.slice(2)
         console.log(genChallenge)
-        genChallenge[0] = 1;
-        genChallenge[1] = keySlot; // key number to use (random: 1 or 2)
-        genChallenge = buf2hex(genChallenge);
+        // genChallenge[0] = 1;
+        // genChallenge[1] = keySlot; // key number to use (random: 1 or 2)
+        // genChallenge = buf2hex(genChallenge);
+        
+        // Add command.
+        genChallenge = '1' + keySlot + genChallenge;
+        console.log(genChallenge)
 
-        console.log(genChallenge)
         return genChallenge
       }
 
