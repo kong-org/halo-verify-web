@@ -171,26 +171,31 @@
       }
 
       function genRandomChallenge(keySlot) {
-        let genChallenge = new Uint8Array(2 + 32);
-        crypto.getRandomValues(genChallenge);
+        // let genChallenge = new Uint8Array(2 + 32);
+        let genChallenge = ethers.utils.hashMessage("Hello World")
+        // crypto.getRandomValues(genChallenge);
+        console.log(genChallenge)
+        genChallenge = genChallenge.slice(2, -1)
+        console.log(genChallenge)
         genChallenge[0] = 1;
         genChallenge[1] = keySlot; // key number to use (random: 1 or 2)
         genChallenge = buf2hex(genChallenge);
 
+        console.log(genChallenge)
         return genChallenge
       }
 
-      function verifySignature(digest, signature, publicKey) {
-        console.log(`digest: ${digest}`);
+      function verifySignature(message, signature, publicKey) {
+        console.log(`digest: ${message}`);
         console.log(`signature: ${signature}`);
         console.log(`publicKey: ${publicKey}`)
         // let sig = ethers.utils.splitSignature('0x' + signature)
         // console.log(sig)
 
         // const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, sig);
-        const recoveredAddress = ethers.utils.verifyMessage('0x' + digest, '0x' + signature)
+        const recoveredAddress = ethers.utils.verifyMessage('0x' + message, '0x' + signature)
         console.log(`recovered public key: ${recoveredAddress}`);
-        const computedAddress = ethers.utils.computeAddress(publicKey)
+        const computedAddress = ethers.utils.computeAddress('0x' + publicKey)
         console.log(`computed address: ${computedAddress}`);
         if (computedAddress == recoveredAddress) {
           console.log(`verify true`)
