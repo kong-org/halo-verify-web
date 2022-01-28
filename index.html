@@ -171,22 +171,25 @@
       }
 
       function genRandomChallenge(keySlot) {
-        // let genChallenge = new Uint8Array(2 + 32);
         console.log(`genRandomChallenge called`)
-        let genChallenge = ethers.utils.hashMessage("Hello World")
+        let message = ethers.utils.hashMessage("Hello World")
+
+        console.log(message)
+        message = message.slice(2)
+        console.log(message)
+
+        // let genChallenge = new Uint8Array(2 + 32);
         // crypto.getRandomValues(genChallenge);
-        console.log(genChallenge)
-        genChallenge = genChallenge.slice(2)
-        console.log(genChallenge)
         // genChallenge[0] = 1;
         // genChallenge[1] = keySlot; // key number to use (random: 1 or 2)
         // genChallenge = buf2hex(genChallenge);
+        // console.log(genChallenge)
         
         // Add command.
-        genChallenge = '1' + keySlot + genChallenge;
-        console.log(genChallenge)
+        message = '010' + keySlot + message;
+        console.log(message)
 
-        return genChallenge
+        return message
       }
 
       function verifySignature(message, signature, publicKey) {
