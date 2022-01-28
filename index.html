@@ -35,6 +35,8 @@
           />
           </a>
         </svg>
+
+        <p id="pkey1raw" hidden>0x</p>
       </div>
     </div>
 
@@ -165,6 +167,7 @@
         };
         document.getElementById('pkey1').innerHTML = keys["primaryPublicKeyHash"]
         document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
+        document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
       }
 
       function genRandomChallenge(keySlot) {
@@ -181,12 +184,15 @@
         console.log(`digest: ${digest}`);
         console.log(`signature: ${signature}`);
         console.log(`publicKey: ${publicKey}`)
-        let sig = ethers.utils.splitSignature('0x' + signature)
-        console.log(sig)
-        console.log(`call verify signature: ${digest}, ${sig}, ${publicKey}`);
-        const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, sig);
-        console.log(`recovered public key: ${recoveredPublicKey}`);
-        if ('0x' + publicKey == recoveredPublicKey) {
+        // let sig = ethers.utils.splitSignature('0x' + signature)
+        // console.log(sig)
+
+        // const recoveredPublicKey = ethers.utils.recoverPublicKey('0x' + digest, sig);
+        const recoveredAddress = ethers.utils.verifyMessage('0x' + digest, '0x' + signature)
+        console.log(`recovered public key: ${recoveredAddress}`);
+        const computedAddress = ethers.utils.computeAddress(publicKey)
+        console.log(`computed address: ${computedAddress}`);
+        if (computedAddress == recoveredAddress) {
           console.log(`verify true`)
           document.getElementById('title2').innerHTML = "HaLo Verified"
         } else {
@@ -240,7 +246,7 @@
         var res = await authU2F(req);
 
         // TODO: select the key we sign with.
-        let publickKey = document.getElementById("pkey1").innerText;
+        let publickKey = document.getElementById("pkey1raw").innerText;
         let signature = buf2hex(res);
 
         // TODO: challenge is really challengeCmd, rename.
