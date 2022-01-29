@@ -205,22 +205,18 @@
 
         // We generate DER signatures, not RLP. As such we do not have the v parameter and must ascertain it.
         let vByte = new Uint8Array(1);
-        vByte[0] = 0;
+        vByte[0] = 27;
         const vByte0 = buf2hex(vByte);
-        vByte[0] = 1;
+        vByte[0] = 28;
         const vByte1 = buf2hex(vByte);
 
+        // Test which byte was used in the message.
         switch(computedAddress) {
-          case vByte0:
-            computedAddress == ethers.utils.verifyMessage(message, '0x' + sigRaw.r + sigRaw.v + vByte0);
-            console.log(`verify true vbyte0`);
+          case ethers.utils.verifyMessage(message, '0x' + sigRaw.r + sigRaw.s + vByte0):
             return true;
-          case vByte1:
-            computedAddress == ethers.utils.verifyMessage(message, '0x' + sigRaw.r + sigRaw.v + vByte1);
-            console.log(`verify true vbyte2`);
+          case ethers.utils.verifyMessage(message, '0x' + sigRaw.r + sigRaw.s + vByte1):
             return true;
           default:
-          console.log(`verify false`)
           return false;
         }
 
