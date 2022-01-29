@@ -157,8 +157,8 @@
 
       const staticHaloData = currentURL.searchParams.get("static");
 
+      // Parsing information and storing.
       function prepareVerify(staticHaloData) {
-        console.log(`halo data: ${staticHaloData}`)
         keys = parseKeys(buf2hex(staticHaloData));
 
         document.getElementById('scan').innerHTML = "Verify"
@@ -249,16 +249,11 @@
       async function readKeyU2F() {
         let res = await authU2F(fromHexString("02"));
 
-        // TODO verify the signature from the result.
-        // 4104244D15B9E21146765B855D83242CC57900379DB119AC1CC6ADD4BE5AB36037C007DA1531EC2725EF0565CB688482DE534933C5F53D75914052BB19BC1283B1114104CD0C47F2F215B23A47B91D749573FA1C151C9418E60D3CD62A532EEE5A7C14B9492F44FB4B51364B8590742A1FDCFF653F3FB1D78C299D51AD74232CD4A1400C
-        //document.getElementById('message').innerHTML = buf2hex(`response: ${res}`)
-        console.log(res)
         prepareVerify(res);
       }
 
+      // Carry out a signature command against a HaLo.
       async function signU2F() {
-        console.log('sign u2f called')
-
         document.getElementById('title1').innerHTML = "Challenge"
         document.getElementById('title2').innerHTML = "Signature"
 
@@ -276,7 +271,7 @@
 
         // Verify the challenge message against the signature and publicKey.
         if (verifySignature(challenge, signature, publickKey)) {
-          document.getElementById('title2').innerHTML = "HaLo Verified"
+          document.getElementById('headerMessage').innerHTML = "HaLo Verified"
         }
 
         document.getElementById('pkey1').innerHTML = challenge
