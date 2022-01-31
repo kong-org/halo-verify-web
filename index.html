@@ -11,17 +11,15 @@
     <div class="wrapper">
       <div class="width">
         <div class="box">
-          <h1>Halo Detected</h1>
+          <h1 id="headerMessage">Halo Detected</h1>
 
-          <h2>Primary Public Key Hash</h2>
+          <h2 id="title1">Primary Public Key Hash</h2>
           <p id="pkey1">Unknown</p>
 
-          <h2>Secondary Public Key Hash</h2>
+          <h2 id="title2">Secondary Public Key Hash</h2>
           <p id="pkey2">Unknown</p>
 
-          <a class="button" onClick="readKeyU2F();" >Verify</a>
-
-          <span id="message">Verification coming soon</span>
+          <a id="scan" class="button" onClick="readKeyU2F();">Scan</a>
         </div>
 
         <svg
@@ -37,6 +35,8 @@
           />
           </a>
         </svg>
+
+        <p id="pkey1raw" hidden>0x</p>
       </div>
     </div>
 
@@ -49,46 +49,15 @@
 
       let currentURL = new URL(window.location.href);
 
-      // TODO: parse this data.
-      staticHaloData = currentURL.searchParams.get("static");
-
-      primaryPublicKeyLength = parseInt('0x' + staticHaloData.slice(0, 2)) * 2;
-      primaryPublicKeyRaw = staticHaloData.slice(2, primaryPublicKeyLength + 2);
-      primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
-
-      secondaryPublicKeyLength = parseInt(
-        '0x' + staticHaloData.slice(
-          primaryPublicKeyLength + 2, 
-          primaryPublicKeyLength + 4)) * 2;
+      const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015');
       
-      secondaryPublicKeyRaw = staticHaloData.slice(
-        primaryPublicKeyLength + 4, 
-        primaryPublicKeyLength + 
-        secondaryPublicKeyLength + 4);
+      async function getBlockhash() {
+        // Get the latest Ethereum block.
+        const block = await provider.getBlock();
 
-      secondaryPublicKeyHash = ethers.utils.sha256('0x' + secondaryPublicKeyRaw.slice(2))
-
-      tertiaryPublicKeyLength = parseInt(
-        '0x' + staticHaloData.slice(
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 4, 
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 6)) * 2;
-      
-      var tertiaryPublicKeyRaw = null;
-
-      if (tertiaryPublicKeyLength > 0) {
-        tertiaryPublicKeyRaw = staticHaloData.slice(
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 6, 
-          primaryPublicKeyLength + 
-          secondaryPublicKeyLength + 
-          tertiaryPublicKeyLength + 6
-        );        
+        console.log(block.hash)
+        return block.hash;
       }
-
-      document.getElementById('pkey1').innerHTML = primaryPublicKeyHash
-      document.getElementById('pkey2').innerHTML = secondaryPublicKeyHash
 
       const fromHexString = hexString =>
           new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -97,6 +66,174 @@
         return [...new Uint8Array(buffer)]
           .map(x => x.toString(16).padStart(2, '0'))
           .join('');
+      }
+
+      function parseKeys(payload) {
+        primaryPublicKeyLength = parseInt('0x' + payload.slice(0, 2)) * 2;
+        primaryPublicKeyRaw = payload.slice(2, primaryPublicKeyLength + 2);
+        primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
+
+        secondaryPublicKeyLength = parseInt(
+          '0x' + payload.slice(
+            primaryPublicKeyLength + 2, 
+            primaryPublicKeyLength + 4)) * 2;
+        
+        secondaryPublicKeyRaw = payload.slice(
+          primaryPublicKeyLength + 4, 
+          primaryPublicKeyLength + 
+          secondaryPublicKeyLength + 4);
+
+        secondaryPublicKeyHash = ethers.utils.sha256('0x' + secondaryPublicKeyRaw.slice(2))
+
+        tertiaryPublicKeyLength = parseInt(
+          '0x' + payload.slice(
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 4, 
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 6)) * 2;
+        
+        var tertiaryPublicKeyRaw = null;
+        var tertiaryPublicKeyHash = null;
+
+        if (tertiaryPublicKeyLength > 0) {
+          tertiaryPublicKeyRaw = payload.slice(
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 6, 
+            primaryPublicKeyLength + 
+            secondaryPublicKeyLength + 
+            tertiaryPublicKeyLength + 6
+          );
+          
+          tertiaryPublicKeyHash = ethers.utils.sha256('0x' + tertiaryPublicKeyRaw.slice(2))
+        }
+
+        const keys = {
+          'primaryPublicKeyHash': primaryPublicKeyHash,
+          'primaryPublicKeyRaw': primaryPublicKeyRaw,
+          'secondaryPublicKeyHash': secondaryPublicKeyHash,
+          'secondaryPublicKeyRaw': secondaryPublicKeyRaw,
+          'tertiaryPublicKeyHash': tertiaryPublicKeyHash,
+          'tertiaryPublicKeyRaw': tertiaryPublicKeyRaw
+        }
+
+        return keys
+      }
+
+      // This shit is nasty.
+      function unpackDERSignature(sig) {
+        let header0 = sig.slice(0, 2);
+        if (parseInt('0x' + header0) !== 0x30) {
+          throw Error('Invalid header.');
+        }
+
+        let header_r0 = sig.slice(4, 6);
+        let header_r1 = sig.slice(6, 8);
+
+        if (parseInt('0x' + header_r0) !== 0x02) {
+          throw Error('Invalid header (2).');
+        }
+
+        let length_r = parseInt('0x' + header_r1) * 2;
+        let r = sig.slice(8, length_r + 8);
+      
+        let header_s0 = sig.slice(length_r + 8, length_r + 10);
+        let header_s1 = sig.slice(length_r + 10, length_r + 12);
+
+        console.log(header_s1)
+
+        if (parseInt('0x' + header_s0) !== 0x02) {
+          throw Error('Invalid header (2).');
+        }
+
+        console.log(length_r + 12)
+        console.log(parseInt('0x' + header_s1) * 2)
+        let s = sig.slice(length_r + 12, length_r + 12 + parseInt('0x' + header_s1) * 2);
+
+        console.log(s.length)
+
+        if (r.length == 66) {
+          r = r.slice(2, 130)
+        }
+
+        if (s.length == 66) {
+          s = s.slice(2, 130)
+        }
+
+        return {
+          "r": r,
+          "s": s
+        };
+      }
+
+      const staticHaloData = currentURL.searchParams.get("static");
+
+      // Parsing information and storing.
+      function prepareVerify(staticHaloData) {
+        keys = parseKeys(buf2hex(staticHaloData));
+
+        document.getElementById('scan').innerHTML = "Verify"
+        document.getElementById('scan').onclick = function () {
+          signU2F();
+          return false
+        };
+        document.getElementById('pkey1').innerHTML = keys["primaryPublicKeyHash"]
+        document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
+        document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
+      }
+
+      // Generate a command formatted for the HaLo. 
+      function generateCmd(cmd, keyslot, message = null) {
+        // EIP-191 signed data for local verification.
+        let messageBytes = ethers.utils.hashMessage(message);
+
+        // Remove prepended 0x.
+        messageBytes = messageBytes.slice(2);
+
+        // Structure command bytes.
+        let cmdBytes = new Uint8Array(2);
+        cmdBytes[0] = cmd;
+        cmdBytes[1] = keyslot;
+        cmdBytes = buf2hex(cmdBytes);
+
+        // Prepend the message with the command.
+        inputBytes = cmdBytes + messageBytes;
+
+        return inputBytes
+      }
+
+      // Verify the DER encoded signature against the input message and uncompressed public key.
+      function verifySignature(message, signature, publicKey) {
+        console.log(`digest: ${message}`);
+        console.log(`signature: ${signature}`);
+        console.log(`publicKey: ${publicKey}`)
+
+        // Compute the Ethereum address from the publicKey.
+        const computedAddress = ethers.utils.computeAddress('0x' + publicKey)
+
+        // Strip out DER formatting to get r and s.
+        const sigRaw = unpackDERSignature(signature);
+
+        // We generate DER signatures, not RLP. As such we do not have the v parameter and must ascertain it.
+        let vByte = new Uint8Array(1);
+        vByte[0] = 27;
+        const vByte0 = buf2hex(vByte);
+        vByte[0] = 28;
+        const vByte1 = buf2hex(vByte);
+
+        // Test which byte was used in the message.
+        switch(computedAddress) {
+          case ethers.utils.verifyMessage(message, '0x' + sigRaw.r + sigRaw.s + vByte0):
+            return true;
+          case ethers.utils.verifyMessage(message, '0x' + sigRaw.r + sigRaw.s + vByte1):
+            return true;
+          default:
+          return false;
+        }
+
+      }
+
+      if(staticHaloData) {
+        prepareVerify(staticHaloData);
       }
 
       async function authU2F(reqx) {
@@ -109,7 +246,7 @@
             }
           ],
           "challenge": new Uint8Array([113, 241, 176, 49, 249, 113, 39, 237, 135, 170, 177, 61, 15, 14, 105, 236, 120, 140, 4, 41, 65, 225, 107, 63, 214, 129, 133, 223, 169, 200, 21, 88]),
-          "rpId": "eth.vrfy.ch",
+          "rpId": "dev.vrfy.ch",
           "timeout": 60000,
           "userVerification": "discouraged"
         }};
@@ -118,76 +255,39 @@
         return xdd.response.signature;
       }
 
+      // This runs a command to read out the public keys.
       async function readKeyU2F() {
         let res = await authU2F(fromHexString("02"));
 
-        document.getElementById('message').innerHTML = buf2hex(res)
+        prepareVerify(res);
       }
 
-      // async function authBtnU2F() {
-      //   var req = fromHexString("0101abc1898af1b0cf120f5d372d26453c28191d2ba81cbc317c7afa6da516105ccd");
-      //   var res = await auth(req);
-      // }
+      // Carry out a signature command against a HaLo.
+      async function signU2F() {
+        document.getElementById('title1').innerHTML = "Challenge"
+        document.getElementById('title2').innerHTML = "Signature"
 
-      // let genChallenge = new Uint8Array(2 + 32);
-      // crypto.getRandomValues(genChallenge);
-      // genChallenge[0] = 1;
-      // genChallenge[1] = 1 + (genChallenge[1] % 2); // key number to use (random: 1 or 2)
+        // Generate the challenge and command bytes as 'input'.
+        const challenge = await getBlockhash();
+        const input = generateCmd(1, 1, challenge);
 
-      // genChallenge = buf2hex(genChallenge);
+        // Send the input bytes.
+        var req = fromHexString(input);
+        var res = await authU2F(req);
 
-      // let ndef;
-      // let ctrl;
+        // TODO: select the key we sign with.
+        const publickKey = document.getElementById("pkey1raw").innerText;
+        const signature = buf2hex(res);
 
-      // try {
-      //   ndef = new NDEFReader();
-      //   ctrl = new AbortController();
+        // Verify the challenge message against the signature and publicKey.
+        if (verifySignature(challenge, signature, publickKey)) {
+          document.getElementById('headerMessage').innerHTML = "HaLo Verified"
+        }
 
-      // ndef.addEventListener("readingerror", () => {
-      //   document.getElementById('message').innerHTML = 'Read error. Please try again.'
-      // });
+        document.getElementById('pkey1').innerHTML = challenge
+        document.getElementById('pkey2').innerHTML = buf2hex(res)
 
-      // ndef.addEventListener("reading", async ({message, serialNumber}) => {
-      //   let pkey1;
-      //   let pkey2;
-      //   let challenge;
-      //   let signature;
-
-      //   try {
-      //     let url = new URL(new TextDecoder("utf-8").decode(message.records[0].data));
-      //     let myURL = new URL(window.location.href);
-
-      //     pkey1 = myURL.searchParams.get("pkey1");
-      //     pkey2 = myURL.searchParams.get("pkey2");
-
-      //     document.getElementById('pkey1').innerHTML = pkey1
-      //     document.getElementById('pkey2').innerHTML = pkey2
-      //   } catch (e) {
-      //     document.getElementById('message').innerHTML = 'Read error. Please try again.'
-      //     return;
-      //   }
-
-      // });
-
-      // document.getElementById("authButton").addEventListener("click", async () => {
-      //   document.getElementById("authButton").disabled = true;
-      //   document.getElementById("authButtonU2F").disabled = true;
-      //   document.getElementById('message').innerHTML = 'Please tap the card and hold it.'
-
-      //   try {
-      //     let challenge = fromHexString(genChallenge);
-      //     await ndef.write({records: [{recordType: "unknown", data: challenge}]});
-
-      //     document.getElementById('message').innerHTML = 'Reading data... Please hold the card.'
-
-      //     await ndef.scan({signal: ctrl.signal});
-      //   } catch (error) {
-      //     document.getElementById('message').innerHTML = 'Read error. Please try again.'
-      //   }
-      // });
-      // } catch (e) {
-      //   document.getElementById('message').innerHTML = 'WebNFC not available.';
-      // }
+      }
 
     </script>
   </body>
