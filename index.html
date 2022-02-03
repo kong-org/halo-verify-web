@@ -171,14 +171,17 @@
       function prepareVerify(staticHaloData) {
         keys = parseKeys(buf2hex(staticHaloData));
 
-        document.getElementById('scan').innerHTML = "Verify"
-        document.getElementById('scan').onclick = function () {
-          signU2F();
-          return false
-        };
+        if (document.getElementById('pkey1raw').innerHTML) {
+          document.getElementById('scan').innerHTML = "Verify"
+          document.getElementById('scan').onclick = function () {
+            signU2F();
+            return false
+          };
+          document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
+        }
+
         document.getElementById('pkey1').innerHTML = keys["primaryPublicKeyHash"]
         document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
-        document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
       }
 
       // Generate a command formatted for the HaLo. 
