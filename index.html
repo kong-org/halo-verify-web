@@ -205,13 +205,16 @@
       function verifySignature(message, signature, publicKey) {
         console.log(`digest: ${message}`);
         console.log(`signature: ${signature}`);
-        console.log(`publicKey: ${publicKey}`)
+        console.log(`publicKey: ${publicKey}`);
 
         // Compute the Ethereum address from the publicKey.
         const computedAddress = ethers.utils.computeAddress('0x' + publicKey)
+        console.log(`computed address: ${computedAddress}`);
 
         // Strip out DER formatting to get r and s.
         const sigRaw = unpackDERSignature(signature);
+        console.log(`sig r: ${sigRaw.r}`);
+        console.log(`sig s: ${sigRaw.s}`)
 
         // We generate DER signatures, not RLP. As such we do not have the v parameter and must ascertain it.
         let vByte = new Uint8Array(1);
