@@ -183,7 +183,7 @@
         document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
         document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
 
-        const device = getDevice(keys["primaryPublicKeyHash"]);
+        const device = await getDevice(keys["primaryPublicKeyHash"]);
         console.log(`device from arweave: ${device}`)
       }
 
