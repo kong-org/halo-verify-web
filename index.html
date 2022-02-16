@@ -298,6 +298,20 @@
 
       }
 
+      const jsonOrErrorHandler = async (response) => {
+        const resp = response.json();
+        if (response.ok) {
+          return resp;
+        }
+
+        if (resp) {
+          const error = await resp;
+          throw new Error(error.message ?? error.errors[0].message);
+        } else {
+          throw new Error("Internal server error");
+        }
+      };
+
       async function getDevice(primaryPublicKeyHash) {
         console.log(primaryPublicKeyHash)
         const req = await fetch("https://arweave.net/graphql", {
