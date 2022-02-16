@@ -171,7 +171,7 @@
       const staticHaloData = currentURL.searchParams.get("static");
 
       // Parsing information and storing.
-      function prepareVerify(staticHaloData) {
+      async function prepareVerify(staticHaloData) {
         keys = parseKeys(buf2hex(staticHaloData));
 
         document.getElementById('scan').innerHTML = "Verify"
@@ -183,8 +183,13 @@
         document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
         document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
 
-        const device = await getDevice(keys["primaryPublicKeyHash"]);
-        console.log(`device from arweave: ${device}`)
+        let primaryPublicKeyHash = keys["primaryPublicKeyHash"];
+
+        if (primaryPublicKeyHash) {
+          let device = await getDevice(primaryPublicKeyHash)
+          console.log(`device frokm arweave: ${device}`)
+        }
+
       }
 
       // Generate a command formatted for the HaLo. 
