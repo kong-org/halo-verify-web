@@ -182,6 +182,9 @@
         document.getElementById('pkey1').innerHTML = keys["primaryPublicKeyHash"]
         document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
         document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
+
+        const device = getDevice(keys["primaryPublicKeyHash"]);
+        console.log(`device from arweave: ${device}`)
       }
 
       // Generate a command formatted for the HaLo. 
@@ -293,6 +296,73 @@
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
 
+      }
+
+      async function getDevice(primaryPublicKeyHash) {
+        console.log(primaryPublicKeyHash)
+        const req = await fetch("https://arweave.net/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+            query {
+              transactions(
+                  tags: [{
+                      name: "App-Name",
+                      values: ["ERS"]
+                  },{
+                      name: "Device-Id",
+                      values: ["${primaryPublicKeyHash}"]
+                  },{
+                    name: "Device-Record-Type",
+                    values: ["Device-Create"]
+                }
+                ]
+              ) {
+                    edges {
+                      cursor
+                      node {
+                        id
+                        tags {
+                          name
+                          value
+                        }
+                        block {
+                            id
+                            timestamp
+                            height
+                        }
+                      }
+                    }
+              }
+          }
+            `,
+          }),
+        }).then(jsonOrErrorHandler);
+
+        const safeTag = (node, tagName, defaultValue) => {
+          const tag = node.tags.find((tag) => tag.name === tagName);
+          return tag ? tag.value : defaultValue;
+        };
+
+        // TODO: verify the device certificate; return false if none can be located or if it fails to verify.
+        return req.data.transactions.edges.flatMap((nodeItem) => {
+          const n = nodeItem.node;
+          const arweave_id = n.id;
+          const device_addr = safeTag(n, "Device-Address", "null");
+          const device_registry_addr = safeTag(n, "Device-Registry", "null");
+          console.log(`device address from ar: ${device_addr}`)
+
+          return {
+              device_id: device_id,
+              device_addr: device_addr,
+              device_metadata: arweave_id,
+              device_registry_addr: device_registry_addr
+            }
+        });
       }
 
     </script>
