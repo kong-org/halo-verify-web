@@ -20,6 +20,7 @@
           <p id="pkey2">Unknown</p>
 
           <a id="scan" class="button" onClick="readKeyU2F();">Scan</a>
+          <a id="claim_poap_button" style="display: none;" class="button secondary" href="">Claim POAP</a>
         </div>
 
         <svg
@@ -43,6 +44,12 @@
     <script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js" type="text/javascript">
     </script>
     <script>
+      const keyToPoap = {
+        '0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855': 'https://poap.website/klcitizen', //test
+        '0x65248d560e3b060e652135303a6f52990e22bd84e3b48097528d598b16c6ce6d': 'https://poap.website/klcitizen', //cameron
+      };
+      // document.getElementById("claim_poap_button").style.display = "block";
+      // document.getElementById("claim_poap_button").setAttribute("href", 'https://reddit.com');
       setTimeout(function () {
         document.querySelector("body").classList.add("ready");
       }, 400);
@@ -190,6 +197,11 @@
           console.log(`device frokm arweave: ${device}`)
         }
 
+        const poapLink = keyToPoap[primaryPublicKeyHash];
+        if(poapLink){
+          document.getElementById("claim_poap_button").style.display = "block";
+          document.getElementById("claim_poap_button").setAttribute("href", poapLink);
+        }
       }
 
       // Generate a command formatted for the HaLo. 
