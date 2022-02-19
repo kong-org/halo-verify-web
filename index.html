@@ -222,8 +222,11 @@
 
         const poapLink = keyToPoap[primaryPublicKeyHash];
         if(poapLink){
+          console.log(`poap found`)
           document.getElementById("claim_poap_button").style.display = "block";
           document.getElementById("claim_poap_button").setAttribute("href", poapLink);
+        } else {
+          console.log(`no poap`)
         }
       }
 
@@ -411,7 +414,7 @@
           console.log(`device address from ar: ${device_addr}`)
 
           return {
-              device_id: device_id,
+              device_id: n.id,
               device_addr: device_addr,
               device_metadata: arweave_id,
               device_registry_addr: device_registry_addr
