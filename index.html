@@ -101,6 +101,7 @@
       }
 
       function parseKeys(payload) {
+        console.log(`payload for parse: ${payload}`);
         primaryPublicKeyLength = parseInt('0x' + payload.slice(0, 2)) * 2;
         primaryPublicKeyRaw = payload.slice(2, primaryPublicKeyLength + 2);
         primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
@@ -414,10 +415,8 @@
           console.log(`device address from ar: ${device_addr}`)
 
           return {
-              device_id: n.id,
               device_addr: device_addr,
-              device_metadata: arweave_id,
-              device_registry_addr: device_registry_addr
+              device_metadata: arweave_id
             }
         });
       }
