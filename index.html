@@ -75,7 +75,12 @@
       // document.getElementById("claim_poap_button").style.display = "block";
       // document.getElementById("claim_poap_button").setAttribute("href", 'https://reddit.com');
       setTimeout(function () {
+        console.log(`loaded`)
         document.querySelector("body").classList.add("ready");
+        const staticHaloData = currentURL.searchParams.get("static");
+        if(staticHaloData) {
+          prepareVerify(staticHaloData);
+        }
       }, 400);
 
       let currentURL = new URL(window.location.href);
@@ -199,7 +204,7 @@
         };
       }
 
-      const staticHaloData = currentURL.searchParams.get("static");
+      
 
       // Parsing information and storing.
       async function prepareVerify(staticHaloData) {
@@ -283,10 +288,6 @@
           return false;
         }
 
-      }
-
-      if(staticHaloData) {
-        prepareVerify(staticHaloData);
       }
 
       async function authU2F(reqx) {
