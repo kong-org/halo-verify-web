@@ -207,7 +207,7 @@
       
 
       // Parsing information and storing.
-      async function prepareVerify(staticHaloData) {
+      function prepareVerify(staticHaloData) {
         keys = parseKeys(buf2hex(staticHaloData));
 
         document.getElementById('scan').innerHTML = "Verify"
@@ -222,7 +222,7 @@
         let primaryPublicKeyHash = keys["primaryPublicKeyHash"];
 
         if (primaryPublicKeyHash) {
-          let device = await getDevice(primaryPublicKeyHash)
+          //let device = await getDevice(primaryPublicKeyHash)
           console.log(`device frokm arweave: ${device}`)
         }
 
