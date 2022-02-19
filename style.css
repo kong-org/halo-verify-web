@@ -212,6 +212,12 @@ p {
   margin-top: 24px;
 }
 
+.secondary {
+  color: #8076FA;
+  background: #fff;
+  border: 3px solid #8076FA;
+}
+
 .button + span {
   display: block;
   text-align: center;
