@@ -56,6 +56,7 @@
         const block = await provider.getBlock();
 
         console.log(block.hash)
+        console.log(block.number)
         return block.hash;
       }
 
@@ -116,6 +117,7 @@
           'tertiaryPublicKeyRaw': tertiaryPublicKeyRaw
         }
 
+        console.log(keys)
         return keys
       }
 
@@ -168,20 +170,24 @@
       const staticHaloData = currentURL.searchParams.get("static");
 
       // Parsing information and storing.
-      function prepareVerify(staticHaloData) {
+      async function prepareVerify(staticHaloData) {
         keys = parseKeys(buf2hex(staticHaloData));
 
-        if (document.getElementById('pkey1raw').innerHTML) {
-          document.getElementById('scan').innerHTML = "Verify"
-          document.getElementById('scan').onclick = function () {
-            signU2F();
-            return false
-          };
-          document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
-        }
-
+        document.getElementById('scan').innerHTML = "Verify"
+        document.getElementById('scan').onclick = function () {
+          signU2F();
+          return false
+        };
         document.getElementById('pkey1').innerHTML = keys["primaryPublicKeyHash"]
         document.getElementById('pkey2').innerHTML = keys["secondaryPublicKeyHash"]
+        document.getElementById('pkey1raw').innerHTML = keys["primaryPublicKeyRaw"]
+
+        let primaryPublicKeyHash = keys["primaryPublicKeyHash"];
+
+        if (primaryPublicKeyHash) {
+          let device = await getDevice(primaryPublicKeyHash)
+          console.log(`device frokm arweave: ${device}`)
+        }
       }
 
       // Generate a command formatted for the HaLo. 
@@ -208,13 +214,16 @@
       function verifySignature(message, signature, publicKey) {
         console.log(`digest: ${message}`);
         console.log(`signature: ${signature}`);
-        console.log(`publicKey: ${publicKey}`)
+        console.log(`publicKey: ${publicKey}`);
 
         // Compute the Ethereum address from the publicKey.
         const computedAddress = ethers.utils.computeAddress('0x' + publicKey)
+        console.log(`computed address: ${computedAddress}`);
 
         // Strip out DER formatting to get r and s.
         const sigRaw = unpackDERSignature(signature);
+        console.log(`sig r: ${sigRaw.r}`);
+        console.log(`sig s: ${sigRaw.s}`)
 
         // We generate DER signatures, not RLP. As such we do not have the v parameter and must ascertain it.
         let vByte = new Uint8Array(1);
@@ -249,7 +258,7 @@
             }
           ],
           "challenge": new Uint8Array([113, 241, 176, 49, 249, 113, 39, 237, 135, 170, 177, 61, 15, 14, 105, 236, 120, 140, 4, 41, 65, 225, 107, 63, 214, 129, 133, 223, 169, 200, 21, 88]),
-          "rpId": "eth.vrfy.ch",
+          "rpId": "dev.vrfy.ch",
           "timeout": 60000,
           "userVerification": "discouraged"
         }};
@@ -290,6 +299,87 @@
         document.getElementById('pkey1').innerHTML = challenge
         document.getElementById('pkey2').innerHTML = buf2hex(res)
 
+      }
+
+      const jsonOrErrorHandler = async (response) => {
+        const resp = response.json();
+        if (response.ok) {
+          return resp;
+        }
+
+        if (resp) {
+          const error = await resp;
+          throw new Error(error.message ?? error.errors[0].message);
+        } else {
+          throw new Error("Internal server error");
+        }
+      };
+
+      async function getDevice(primaryPublicKeyHash) {
+        console.log(primaryPublicKeyHash)
+        const req = await fetch("https://arweave.net/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+            query {
+              transactions(
+                  tags: [{
+                      name: "App-Name",
+                      values: ["ERS"]
+                  },{
+                      name: "Device-Id",
+                      values: ["${primaryPublicKeyHash}"]
+                  },{
+                    name: "Device-Record-Type",
+                    values: ["Device-Create"]
+                }
+                ]
+              ) {
+                    edges {
+                      cursor
+                      node {
+                        id
+                        tags {
+                          name
+                          value
+                        }
+                        block {
+                            id
+                            timestamp
+                            height
+                        }
+                      }
+                    }
+              }
+          }
+            `,
+          }),
+        }).then(jsonOrErrorHandler);
+
+        const safeTag = (node, tagName, defaultValue) => {
+          const tag = node.tags.find((tag) => tag.name === tagName);
+          return tag ? tag.value : defaultValue;
+        };
+
+        // TODO: verify the device certificate; return false if none can be located or if it fails to verify.
+        return req.data.transactions.edges.flatMap((nodeItem) => {
+          const n = nodeItem.node;
+          const arweave_id = n.id;
+          const device_addr = safeTag(n, "Device-Address", "null");
+          const device_registry_addr = safeTag(n, "Device-Registry", "null");
+          console.log(`device address from ar: ${device_addr}`)
+
+          return {
+              device_id: device_id,
+              device_addr: device_addr,
+              device_metadata: arweave_id,
+              device_registry_addr: device_registry_addr
+            }
+        });
       }
 
     </script>
