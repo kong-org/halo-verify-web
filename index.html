@@ -44,36 +44,7 @@
     <script src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js" type="text/javascript">
     </script>
     <script>
-      const keyToPoap = {
-        '0x65248d560e3b060e652135303a6f52990e22bd84e3b48097528d598b16c6ce6d': 'https://poap.website/klcitizen',
-        '0x7fe6968bbb257075805da7d1349c611882cce7c2da4341d02a3e49d540a79d9e': 'https://poap.website/klcitizen',
-        '0xb1f5ba391acc60ab95009e2434d5bf5022a7894b298b5503929177b07d5b1ddb': 'https://poap.website/klcitizen',
-        '0xdfb5b60391e04f15d01919bcb2ca70a7ca348d9b98224d4c8950913bc928a4f3': 'https://poap.website/klcitizen',
-        '0x59e18b98f84a9cd5b2ad51caccabfae5d40924b17964b7c538720942efd31dbe': 'https://poap.website/klcitizen',
-        '0x987a14ed3782d35f8b6feea1ba30f0b8498d54b82d43ec5092299b5118a1a090': 'https://poap.website/klcitizen',
-        '0x8749be9a386d3d8be70cd34cad0286d405a45f5e80bb6541802e4ac58c7643c0': 'https://poap.website/klcitizen',
-        '0x4ecd4d3bd9bd3f2ee5cba230dd234a76ed10512decbfcefc4823a36498638a73': 'https://poap.website/klcitizen',
-        '0x79d55a462a9e54f65ce6d2641b562d8caf0e57c17fb4016ef92da5144c86201a': 'https://poap.website/klcitizen',
-        '0x8b847f9200530051852eff2b89694288bea6544626dc0cebbfb4455beb1e7c27': 'https://poap.website/klcitizen',
-        '0xf10d12497457e78d603520911a51e53799ef915bd1691c1ef37c6bcb44f7edb4': 'https://poap.website/klcitizen',
-        '0xbba85404f19de3c368f891b4dceebb4d50f0ae554a97edb432f447c921ffe207': 'https://poap.website/klcitizen',
-        '0x68512d0670cb6dbc2e80c3652820567de61e0d5b13289f29dffe8410b7214ad5': 'https://poap.website/klcitizen',
-        '0xf7a5b4ed2be2808959801760fd9932afd37de65c07c321fb0258e7d1fead9fb5': 'https://poap.website/klrxtx', // lamp
-        '0x8002a892de66066ac11815f0e1b1bba5357f55361679663c1dd928dccb3e8582': 'https://poap.website/klvinyl', // vinyl 1
-        '0xb5c01a39764482af46c8bfb023156672545355cb48d422584b09ff6342f8c3e8': 'https://poap.website/klvinyl', // vinyl 2
-        '0x64ce02d3c1e11f52e4ba8f55d9fe8f49f65f25766cedf5ca992ef920c8ed3cd1': 'https://poap.website/klmattaglass', // KONG BONG
-        '0xa7eed99c5ea0b5914fab4db58c073f9d2237806bba3638653d0f61b1ff8cb5bb': 'https://poap.website/klmetafactory', //MF booth
-        '0x2d53ab0327c5da21edc9fd546ba1173531ee1c8f8a71576b4f6f78d66ad80c93': 'https://poap.website/kllootlarp', //  lootlarp 1
-        '0x25356291d732dcdbacf22688a78d71b695984b35c068ca530025ca3485ac24f3': 'https://poap.website/kllootlarp', //  lootlarp 2
-        '0xcedaf8acedfb6f317bb6ac8e417facbfb8b9da342a424870d5d5af1fe4d39707': 'https://poap.website/klwild',
-        '0x3f870f96481bf8e0ecd9f5a84b905a9f4a3cac01ae7b6cf1cb03170996808c97': 'https://poap.website/klwild',
-        '0x22fdb54e75095dbfa74d1d6306da395ffc39937aad7eb943c904e11d627247b7': 'https://poap.website/klwild',
-        '0x42a7c7b875fa68e188adf38436e52a59273181521ffa5b40ad9fcb0bc9677b72': 'https://poap.website/klwild',
-        '0xf4e895a35bf4b561a8b9df629f175118810c2f57bc7a6f01a43dd942b3d69606': 'https://poap.website/klwild',
-        '0xd7ef3677b50674e36cb60f57f3ec195e4062eef548459e49a054b90fbfdb1c09': 'https://poap.website/klwild',
-      };
-      // document.getElementById("claim_poap_button").style.display = "block";
-      // document.getElementById("claim_poap_button").setAttribute("href", 'https://reddit.com');
+
       setTimeout(function () {
         document.querySelector("body").classList.add("ready");
       }, 400);
@@ -230,14 +201,6 @@
           // console.log(`device frokm arweave: ${device}`)
         }
 
-        const poapLink = keyToPoap[primaryPublicKeyHash];
-        if(poapLink){
-          console.log(`poap found`)
-          document.getElementById("claim_poap_button").style.display = "block";
-          document.getElementById("claim_poap_button").setAttribute("href", poapLink);
-        } else {
-          console.log(`no poap`)
-        }
       }
 
       // Generate a command formatted for the HaLo. 
