@@ -1,0 +1,22 @@
+.field {
+  & + & {
+    margin-top: 16px;
+  }
+
+  input[type='text'],
+  textarea {
+    border: 1px solid $border;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  input[type='text'] {
+    line-height: 48px;
+    padding: 0 16px;
+  }
+
+  textarea {
+    padding: 16px;
+    height: 220px;
+  }
+}

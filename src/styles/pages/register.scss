@@ -1,0 +1,76 @@
+.register-url-block {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: white;
+  left: -9999px;
+  opacity: 0;
+  transition: $fadeOff;
+
+  &.active {
+    left: 0;
+    opacity: 1;
+    transition: $fadeOn;
+  }
+
+  textarea {
+    height: 280px;
+  }
+}
+
+.register-url-block-cancel {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+}
+
+.register-url-block-upload {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+}
+
+.register-image-preview {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+  width: 100%;
+  height: 280px;
+  background: $lightGrayBg;
+  opacity: 0;
+  transition: $fadeOff;
+  border-radius: 15px;
+  overflow: hidden;
+
+  &.previewing {
+    opacity: 1;
+    left: 0;
+    transition: $fadeOn;
+  }
+
+  img {
+    height: 280px;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+.register-image-preview-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(4, 3, 3, 0.45);
+  z-index: 2;
+  color: $white;
+  transition: 0.2s background-color, 0.2s color;
+
+  &:hover {
+    background-color: rgba(4, 3, 3, 0.9);
+  }
+}

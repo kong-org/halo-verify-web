@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.65;
+  font-family: $font;
+  background-color: $bg;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+input,
+select,
+button,
+textarea {
+  appearance: none;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: $font;
+  font-size: 16px;
+}
+
+input[type='email'],
+input[type='text'],
+input[type='password'],
+input[type='search'],
+textarea {
+  display: block;
+  width: 100%;
+}
+
+a,
+button,
+label,
+input[type='submit'],
+input[type='checkbox'],
+input[type='radio'] {
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}

@@ -1,0 +1,60 @@
+.button {
+  text-align: center;
+  display: inline-block;
+  line-height: 48px;
+  border-radius: 24px;
+  font-size: 13px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: $black;
+  user-select: none;
+  padding: 0 16px;
+  transition: 0.2s color, 0.2s background-color, 0.2s border-color, 0.2s transform;
+
+  // States
+  &:disabled {
+    pointer-events: none;
+  }
+
+  // Sizing
+  &.fullWidth {
+    display: block;
+    width: 100%;
+  }
+
+  &.small {
+    line-height: 24px;
+    padding: 0 12px;
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  /// Colors
+  &.black {
+    background: $black;
+    color: $white;
+
+    &:disabled {
+      background-color: #d7d7d7;
+    }
+  }
+
+  &.black-line {
+    background: transparent;
+    border: 1px solid $black;
+    line-height: 46px;
+
+    &.small {
+      line-height: 22px;
+    }
+
+    &:hover {
+      background: $black;
+      color: $white;
+    }
+  }
+
+  &.pink-gradient {
+    background: linear-gradient(95.58deg, #fffcef -12.66%, #ffb9d2 54.5%, #ffd28f 108.52%);
+  }
+}
