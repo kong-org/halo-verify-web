@@ -1,0 +1,146 @@
+.text-xs {
+  font-size: 12px;
+}
+
+.text-sm {
+  font-size: 14px;
+}
+
+.text-smb {
+  font-size: 15px;
+}
+
+.text-base {
+  font-size: 16px;
+}
+
+.text-lg {
+  font-size: 18px;
+}
+
+.text-xl {
+  font-size: 20px;
+}
+
+.text-2xl {
+  font-size: 24px;
+}
+
+.text-3xl {
+  font-size: 28px;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-black {
+  color: $black;
+}
+
+.text-gray {
+  color: $textGray;
+}
+
+.text-light-gray {
+  color: $textLightGray;
+}
+
+.text-dark-gray {
+  color: $textDarkGray;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.break-word {
+  word-wrap: break-word;
+}
+
+.font-expanded {
+  font-family: $font2;
+  font-weight: 700;
+}
+
+.relative {
+  position: relative;
+}
+
+.hidden {
+  display: none;
+}
+
+.rounded-md {
+  border-radius: 15px;
+}
+
+.blue-text {
+  color: $blue;
+}
+
+.text-decoration-none {
+  text-decoration: none;
+}
+
+@for $i from 0 through 12 {
+  .w-#{$i} {
+    width: $i * 4px;
+  }
+
+  .h-#{$i} {
+    height: $i * 4px;
+  }
+
+  .mt-#{$i} {
+    margin-top: $i * 4px;
+  }
+
+  .mb-#{$i} {
+    margin-bottom: $i * 4px;
+  }
+
+  .ml-#{$i} {
+    margin-left: $i * 4px;
+  }
+
+  .mr-#{$i} {
+    margin-right: $i * 4px;
+  }
+
+  .space-x-#{$i} {
+    & > * + * {
+      margin-left: $i * 4px;
+    }
+  }
+
+  .space-y-#{$i} {
+    & > * + * {
+      margin-top: $i * 4px;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+.header {
+  padding: 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient($black, transparent);
+}
+
+.header-connect {
+  display: inline-block;
+  background: linear-gradient(95.58deg, #fffcef -12.66%, #ffb9d2 54.5%, #ffd28f 108.52%);
+  line-height: 24px;
+  padding: 0 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-radius: 12px;
+}

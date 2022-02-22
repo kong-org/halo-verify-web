@@ -1,0 +1,13 @@
+.gray-center-box {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  height: 280px;
+  background: $lightGrayBg;
+
+  img,
+  svg {
+    margin: 0 auto;
+  }
+}

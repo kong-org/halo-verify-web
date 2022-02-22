@@ -1,0 +1,33 @@
+.loading-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -30px;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+}
+
+.loading {
+  width: 40px;
+  height: 40px;
+  background-color: $black;
+  position: fixed;
+  -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
+  animation: sk-rotateplane 1.2s infinite ease-in-out;
+}
+
+@keyframes sk-rotateplane {
+  0% {
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+  }
+  100% {
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
+}

@@ -1,0 +1,21 @@
+@import 'base/variables';
+@import 'base/fonts';
+@import 'base/reset';
+@import 'base/utility';
+
+@import 'components/header';
+@import 'components/width';
+@import 'components/card';
+@import 'components/footer';
+@import 'components/button';
+@import 'components/chip';
+@import 'components/gray-center-box';
+@import 'components/field';
+@import 'components/loading';
+@import 'components/wallet-dropdown';
+@import 'components/badge';
+@import 'components/divider';
+@import 'components/nft-claim';
+
+@import 'pages/register';
+@import 'pages/success';
