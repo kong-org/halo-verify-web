@@ -8,6 +8,8 @@ import walletStore from '../stores/walletStore'
 export default function Home() {
   const connected = walletStore((s) => s.address).length > 0
   const init = deviceStore((s) => s.init)
+  const primaryKey = deviceStore((s) => s.primaryKey)
+  const linkHalo = deviceStore((s) => s.linkHalo)
 
   useEffect(() => {
     init()
@@ -26,11 +28,11 @@ export default function Home() {
           This device hasn’t been registered. Tap link below to link device.
         </p>
         <h3 className="font-normal mt-4 mb-1 text-light-gray text-xs">Primary public key</h3>
-        <p className="break-word font-bold text-smb">0xb2E0F4dee26CcCf1f3A267Ad185f212Dd3e7a6b1</p>
+        <p className="break-word font-bold text-smb">{primaryKey}</p>
       </CardPadding>
       <CardFooter>
         <CardPadding>
-          <Button fullWidth disabled={!connected}>
+          <Button fullWidth disabled={primaryKey.length == 0 || !connected} onClick={linkHalo}>
             Link Halo
           </Button>
 
