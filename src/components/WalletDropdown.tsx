@@ -4,6 +4,9 @@ import React from 'react'
 import walletStore from '../stores/walletStore'
 import { ReactComponent as ChevronUp } from '../svg/chevron-up.svg'
 import { ReactComponent as Arrow } from '../svg/arrow-up-right.svg'
+import connector from '../walletConnect'
+
+declare var window: any
 
 export default function WalletDropdown() {
   const setActive = walletStore((s) => s.setDropdownActive)
@@ -12,7 +15,12 @@ export default function WalletDropdown() {
   const firstSix = address.slice(0, 5)
   const lastFour = address.substring(address.length - 4)
   const together = firstSix + '..' + lastFour
-  const disconnect = walletStore((s) => s.disconnect)
+
+  const handleDisconnect = () => {
+    if (connector?.peerMeta?.url) {
+      window.open(connector?.peerMeta?.url, '_blank').focus()
+    }
+  }
 
   return (
     <div className={classNames('wallet-dropdown-wrap', { active })} onClick={() => setActive(false)}>
@@ -35,7 +43,7 @@ export default function WalletDropdown() {
             <span className="wallet-dropdown-wallet-link-address">{together}</span>
             <Arrow />
           </a>
-          <button onClick={disconnect} className="wallet-dropdown-wallet-disconnect">
+          <button onClick={handleDisconnect} className="wallet-dropdown-wallet-disconnect">
             Disconnect
           </button>
         </div>

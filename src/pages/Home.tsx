@@ -1,11 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Button from '../components/Button'
 import Card, { CardFooter, CardPadding } from '../components/Card'
 import Chip from '../components/Chip'
+import deviceStore from '../stores/deviceStore'
 import walletStore from '../stores/walletStore'
 
 export default function Home() {
   const connected = walletStore((s) => s.address).length > 0
+  const init = deviceStore((s) => s.init)
+
+  useEffect(() => {
+    init()
+  }, [])
 
   return (
     <Card>
