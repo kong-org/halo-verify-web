@@ -18,6 +18,7 @@ export default function Register() {
   const previewing = registerStore((s) => s.previewing)
   const imageSrcSubmit = registerStore((s) => s.imageSrcSubmit)
   const clearImage = registerStore((s) => s.clearImage)
+  const registerHalo = registerStore((s) => s.registerHalo)
 
   const handleFileChange = (e: any) => {
     const file = e.target.files[0]
@@ -46,10 +47,6 @@ export default function Register() {
                 Upload Image
               </label>
             </div>
-
-            <Button size="small" color="black-line" onClick={() => setUrlMode(true)}>
-              Insert Url
-            </Button>
           </GrayCenterBox>
 
           <div className={classNames('register-url-block', { active: urlMode })}>
@@ -88,7 +85,7 @@ export default function Register() {
       </CardPadding>
       <CardFooter>
         <CardPadding>
-          <Button fullWidth to={'/confirm'}>
+          <Button fullWidth onClick={registerHalo}>
             Tap chip to mint nft
           </Button>
         </CardPadding>
