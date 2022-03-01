@@ -17,8 +17,6 @@ module.exports = function override(config, env) {
       process: 'process/browser',
     }),
   ]
-  console.log(config.resolve)
-  console.log(config.plugins)
 
   return config
 }
