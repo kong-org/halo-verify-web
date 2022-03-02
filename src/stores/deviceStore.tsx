@@ -5,86 +5,30 @@ import parseKeys from '../helpers/parseKeys'
 import safeTag from '../helpers/safeTag'
 import fromHexString from '../helpers/fromHexString'
 import buf2hex from '../helpers/bufToHex'
-
-interface IKeys {
-  primaryPublicKeyHash: string
-  primaryPublicKeyRaw: string
-  secondaryPublicKeyHash: string
-  secondaryPublicKeyRaw: string
-  tertiaryPublicKeyHash: string | null
-  tertiaryPublicKeyRaw: string | null
-}
-
-interface IDevice {
-  node_id: string
-  app_name: string
-  app_version: string
-  content_type: string
-  device_record_type: string
-  device_id: string
-  device_address: string
-  device_manufacturer: string
-  device_model: string
-  device_merkel_root: string
-  device_registry: string
-  ifps_add: string
-}
+import { IDevice, IKeys } from '../types'
+import generateArweaveQuery from '../helpers/generateArweaveQuery'
+import { ethers } from 'ethers'
 
 type TDeviceStore = {
   keys: IKeys | null
   device: IDevice | null
+  registered: boolean
+  creator: string | null
   init(): void
   getDevice(): void
   linkHalo(): void
   triggerScan(reqx: any): void
 }
 
-function generateQuery(keys: IKeys) {
-  return `
-  query {
-      transactions(
-          tags: [{
-              name: "App-Name",
-              values: ["ERS"]
-          },{
-              name: "Device-Id",
-              values: ["${keys.primaryPublicKeyHash}"]
-          },{
-          name: "Device-Record-Type",
-          values: ["Device-Create"]
-      }
-      ]
-      ) {
-          edges {
-              cursor
-              node {
-              id
-              tags {
-                  name
-                  value
-              }
-              block {
-                  id
-                  timestamp
-                  height
-              }
-              }
-          }
-      }
-  }
-  `
-}
-
 const deviceStore = create<TDeviceStore>((set) => ({
   keys: null,
-
   device: null,
+  registered: false,
+  creator: null,
 
   init: () => {
     const url = URL(window.location.href, true)
     const keys = parseKeys(url.query.static)
-
-    console.log(keys)
 
     if (keys) {
       set({ keys })
@@ -94,33 +38,55 @@ const deviceStore = create<TDeviceStore>((set) => ({
 
   getDevice: async () => {
     const { keys } = deviceStore.getState()
+
+    // Return early if we don't have keys
     if (!keys) return
 
-    const query = generateQuery(keys)
+    // if we do fetch data from arweave
+    const query = generateArweaveQuery(keys)
 
-    axios.post('https://arweave.net/graphql', { query }).then((res) => {
+    axios.post('https://arweave.net/graphql', { query }).then(async (res) => {
       const transactions = res.data.data.transactions.edges
+      const transactionIndex = transactions.findIndex((t: any) => {
+        const tag = t.node.tags.find((tag: any) => tag === 'Device-Record-Type')
+        if (tag === 'Device-Media') return
+      })
+      const tIndex = transactionIndex > -1 ? transactionIndex : 0
 
-      const mapped = transactions.flatMap((nodeItem: any) => {
+      // Create a device object from the first record
+      const mapped = [transactions[tIndex || 0]].flatMap((nodeItem: any) => {
         const node = nodeItem.node
 
         return {
           node_id: node.id,
-          app_name: safeTag(node, 'App-Name', 'null'),
-          app_version: safeTag(node, 'App-Version', 'null'),
-          content_type: safeTag(node, 'Content-Type', 'null'),
-          device_record_type: safeTag(node, 'Device-Record-Type', 'null'),
-          device_id: safeTag(node, 'Device-Id', 'null'),
-          device_address: safeTag(node, 'Device-Address', 'null'),
-          device_manufacturer: safeTag(node, 'Device-Manufacturer', 'null'),
-          device_model: safeTag(node, 'Device-Model', 'null'),
-          device_merkel_root: safeTag(node, 'Device-Merkel-Root', 'null'),
-          device_registry: safeTag(node, 'Device-Registry', 'null'),
-          ifps_add: safeTag(node, 'IPFS-Add', 'null'),
+          app_name: safeTag(node, 'App-Name', null),
+          app_version: safeTag(node, 'App-Version', null),
+          content_type: safeTag(node, 'Content-Type', null),
+          device_record_type: safeTag(node, 'Device-Record-Type', null),
+          device_id: safeTag(node, 'Device-Id', null),
+          device_address: safeTag(node, 'Device-Address', null),
+          device_manufacturer: safeTag(node, 'Device-Manufacturer', null),
+          device_model: safeTag(node, 'Device-Model', null),
+          device_merkel_root: safeTag(node, 'Device-Merkel-Root', null),
+          device_registry: safeTag(node, 'Device-Registry', null),
+          ifps_add: safeTag(node, 'IPFS-Add', null),
+          device_token_metadata: safeTag(node, 'Device-Token-Metadata', null),
+          device_minter: safeTag(node, 'Device-Minter', null),
         }
       })
 
-      set({ device: mapped[0] })
+      set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media' })
+
+      if (mapped[0].device_minter) {
+        console.log('in here!', mapped[0].device_minter)
+        // Get the creator
+        const provider: any = new ethers.providers.JsonRpcProvider(
+          'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015'
+        )
+
+        const creator = await provider.lookupAddress(mapped[0].device_minter)
+        set({ creator })
+      }
     })
   },
 
@@ -149,19 +115,23 @@ const deviceStore = create<TDeviceStore>((set) => ({
 
       return xdd?.response.signature
     } catch (err) {
-      console.log({ err })
+      console.log('Error with scan', err)
     }
   },
 
   linkHalo: async () => {
-    const { triggerScan } = deviceStore.getState()
+    const { triggerScan, getDevice } = deviceStore.getState()
     const sig = await triggerScan('02')
-    const sss = buf2hex(sig)
-    console.log({ sss })
-    const keys = parseKeys(sss)
 
-    if (keys) set({ keys })
-    console.log(keys)
+    if (typeof sig !== 'undefined') {
+      const sss = buf2hex(sig)
+      const keys = parseKeys(sss)
+
+      if (keys) {
+        set({ keys })
+        getDevice()
+      }
+    }
   },
 }))
 

@@ -14,6 +14,9 @@ type TRegisterStore = {
   base64Image: any
   previewing: boolean
   loading: boolean
+  registered: boolean
+  signed: boolean
+  signing: boolean
 
   registerForm: {
     name: string
@@ -22,12 +25,17 @@ type TRegisterStore = {
     image: any
   }
 
+  sigSplit: any
+  block: any
+
   setUrlMode(urlMode: boolean): void
   changeRegisterField(key: string, value: string): void
   changeFileField(file: any): void
   imageSrcSubmit(): void
   clearImage(): void
   setLoading(loading: boolean): void
+  signHalo(): void
+  scanHalo(): void
   registerHalo(): void
 }
 
@@ -36,12 +44,18 @@ const registerStore = create<TRegisterStore>((set) => ({
   base64Image: false,
   loading: false,
   previewing: false,
+  registered: false,
   registerForm: {
     name: '',
     description: '',
     imageSrc: '',
     image: null,
   },
+  sigSplit: false,
+  block: false,
+  registerData: false,
+  signed: false,
+  signing: false,
 
   setLoading: (loading) => {
     set({ loading })
@@ -96,44 +110,36 @@ const registerStore = create<TRegisterStore>((set) => ({
     }))
   },
 
-  registerHalo: async () => {
-    const { name, description, image } = registerStore.getState().registerForm
-    const { triggerScan, keys, device } = deviceStore.getState()
-    const { address } = walletStore.getState()
-
+  scanHalo: async () => {
+    const { triggerScan } = deviceStore.getState()
     const provider: any = new ethers.providers.JsonRpcProvider(
       'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015'
     )
+
     const block = await provider.getBlock()
-
-    console.log('keys', keys?.primaryPublicKeyHash, keys?.primaryPublicKeyHash.substring(2))
-    const device_id = keys?.primaryPublicKeyHash.substring(2)
-
-    console.log({ device_id })
-
-    const device_token_metadata = { name, description }
-
     const blockHash = generateCmd(1, 1, block.hash)
-    console.log({ blockHash })
-
     const sig = await triggerScan(blockHash)
-
     const sigString = buf2hex(sig)
-
     const sigSplit = unpackDERSig(sigString)
 
-    console.log({ sigString })
+    set({ sigSplit, block })
+  },
 
+  signHalo: async () => {
+    const { keys } = deviceStore.getState()
+    const { address } = walletStore.getState()
+    const device_id = keys?.primaryPublicKeyHash.substring(2)
     const msgParams = [address, ethers.utils.hashMessage(device_id!)]
-
-    console.log('made it here!!!', msgParams)
 
     connector
       .signMessage(msgParams)
       .then((result) => {
-        console.log({ result })
+        set({ loading: true })
 
-        // Returns signature.
+        const { name, description, image } = registerStore.getState().registerForm
+        const device_token_metadata = { name, description }
+        const { block, sigSplit } = registerStore.getState()
+
         const data = {
           media: image,
           device_id,
@@ -144,8 +150,6 @@ const registerStore = create<TRegisterStore>((set) => ({
           minter_sig: JSON.stringify(formatMinterSig(result)),
         }
 
-        console.log(data)
-
         function getFormData(object: any) {
           const formData = new FormData()
           Object.keys(object).forEach((key) => formData.append(key, object[key]))
@@ -154,8 +158,6 @@ const registerStore = create<TRegisterStore>((set) => ({
 
         const form = getFormData(data)
 
-        console.log(data)
-
         axios
           .post('https://bridge-ropsten-t5n3k.ondigitalocean.app/mint', form, {
             headers: {
@@ -163,16 +165,23 @@ const registerStore = create<TRegisterStore>((set) => ({
             },
           })
           .then((res) => {
-            console.log(res)
+            set({ signed: true })
           })
           .catch((err) => {
+            set({ loading: false })
+            alert('Something went wrong.')
             console.log(err)
           })
       })
       .catch((error) => {
-        // Error returned when rejected
-        console.error(error)
+        set({ loading: false })
+        alert('Something went wrong.')
+        console.log(error)
       })
+  },
+
+  registerHalo: () => {
+    set({ loading: true })
   },
 }))
 
