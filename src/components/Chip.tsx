@@ -1,5 +1,14 @@
 import React from 'react'
+import { ReactComponent as ChipSVG } from '../svg/chip.svg'
 
-export default function Chip() {
+interface IProps {
+  detected?: boolean
+}
+
+export default function Chip({ detected }: IProps) {
+  if (detected) {
+    return <ChipSVG />
+  }
+
   return <div className="chip"></div>
 }

@@ -1,4 +1,3 @@
-import { ethers } from 'ethers'
 import React, { useEffect } from 'react'
 import Button from '../components/Button'
 import Card, { CardFooter, CardPadding } from '../components/Card'
@@ -11,45 +10,55 @@ function LinkButton() {
   const device = deviceStore((s) => s.device)
   const linkHalo = deviceStore((s) => s.linkHalo)
   const connected = walletStore((s) => s.address).length > 0
+  const registered = deviceStore((s) => s.registered)
 
   if (!keys) {
     return (
       <Button fullWidth onClick={linkHalo}>
+        Scan Halo
+      </Button>
+    )
+  } else if (device && registered) {
+    return (
+      <Button to={'/success'} fullWidth>
+        View Halo
+      </Button>
+    )
+  } else if (device && !connected && !registered) {
+    return (
+      <Button fullWidth disabled>
         Link Halo
       </Button>
     )
-  } else if (!connected) {
+  } else if (device && keys && !registered) {
     return (
-      <Button fullWidth disabled>
-        co Link Halo
+      <Button to={'/register'} fullWidth>
+        Link Halo
       </Button>
     )
-  } else if (keys || device || connected) {
+  } else {
     return (
-      <Button to="/register" fullWidth>
-        re Link Halo
+      <Button fullWidth disabled>
+        Link Halo
       </Button>
     )
   }
 }
 
 export default function Home() {
-  const connected = walletStore((s) => s.address).length > 0
   const init = deviceStore((s) => s.init)
   const keys = deviceStore((s) => s.keys)
-  const device = deviceStore((s) => s.device)
-
-  const triggerScan = deviceStore((s) => s.triggerScan)
+  const connected = walletStore((s) => s.address).length > 0
+  const registered = deviceStore((s) => s.registered)
 
   useEffect(() => {
-    console.log(ethers)
     init()
   }, [])
 
   return (
     <Card>
       <CardPadding>
-        <Chip />
+        <Chip detected={keys ? true : false} />
         {keys ? (
           <>
             <h1 className="text-3xl mt-6 font-expanded uppercase">
@@ -77,7 +86,9 @@ export default function Home() {
       <CardFooter>
         <CardPadding>
           {LinkButton()}
-          <p className="text-center text-xs text-light-gray uppercase mt-4">Connect wallet to link Halo</p>
+          {!connected && !registered && (
+            <p className="text-center text-xs text-light-gray uppercase mt-4">Connect wallet to link Halo</p>
+          )}
         </CardPadding>
       </CardFooter>
     </Card>

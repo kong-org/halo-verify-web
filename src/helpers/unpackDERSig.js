@@ -18,17 +18,11 @@ export default function unpackDERSig(sig) {
   let header_s0 = sig.slice(length_r + 8, length_r + 10)
   let header_s1 = sig.slice(length_r + 10, length_r + 12)
 
-  console.log(header_s1)
-
   if (parseInt('0x' + header_s0) !== 0x02) {
     throw Error('Invalid header (2).')
   }
 
-  console.log(length_r + 12)
-  console.log(parseInt('0x' + header_s1) * 2)
   let s = sig.slice(length_r + 12, length_r + 12 + parseInt('0x' + header_s1) * 2)
-
-  console.log(s.length)
 
   if (r.length == 66) {
     r = r.slice(2, 130)
