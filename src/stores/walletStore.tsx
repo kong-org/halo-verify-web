@@ -30,7 +30,8 @@ const walletStore = create<TWalletStore>((set) => ({
     set({ address, connected: connector.connected })
   },
 
-  disconnect: () => {
+  disconnect: async () => {
+    await connector.killSession()
     set({ dropdownActive: false, address: '', connected: false })
   },
 

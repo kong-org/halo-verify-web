@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 import Button from '../components/Button'
 import Card, { CardFooter, CardPadding } from '../components/Card'
 import Chip from '../components/Chip'
@@ -19,6 +20,8 @@ function LinkButton() {
       </Button>
     )
   } else if (device && registered) {
+    return <Navigate to="/success" />
+
     return (
       <Button to={'/success'} fullWidth>
         View Halo
@@ -48,6 +51,7 @@ function LinkButton() {
 export default function Home() {
   const init = deviceStore((s) => s.init)
   const keys = deviceStore((s) => s.keys)
+  const loading = deviceStore((s) => s.loading)
   const connected = walletStore((s) => s.address).length > 0
   const registered = deviceStore((s) => s.registered)
 
@@ -56,7 +60,7 @@ export default function Home() {
   }, [])
 
   return (
-    <Card>
+    <Card loading={loading}>
       <CardPadding>
         <Chip detected={keys ? true : false} />
         {keys ? (

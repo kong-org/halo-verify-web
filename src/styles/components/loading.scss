@@ -2,7 +2,6 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  margin-top: -30px;
   transform: translate(-50%, -50%);
   width: 40px;
   height: 40px;
@@ -10,20 +9,15 @@
 
 .loading-wrap-2 {
   padding: 40px;
-
-  .loading {
-    margin: 0 auto;
-    position: static;
-  }
 }
 
 .loading {
   width: 40px;
   height: 40px;
   background-color: $black;
-  position: fixed;
   -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
   animation: sk-rotateplane 1.2s infinite ease-in-out;
+  margin: 0 auto;
 }
 
 @keyframes sk-rotateplane {
@@ -38,5 +32,37 @@
   100% {
     transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
     -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
+}
+
+.loading-image-message {
+  background: #f2f2f2;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  padding: 30px;
+  z-index: 2;
+  position: relative;
+
+  p {
+    margin-top: 25px;
+  }
+}
+
+.confirm-loading {
+  position: relative;
+
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    content: '';
+  }
+
+  .button {
+    pointer-events: none;
   }
 }
