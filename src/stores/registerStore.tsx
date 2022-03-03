@@ -17,7 +17,7 @@ type TRegisterStore = {
   registered: boolean
   signed: boolean
   signing: boolean
-
+  message: string
   registerForm: {
     name: string
     description: string
@@ -56,6 +56,7 @@ const registerStore = create<TRegisterStore>((set) => ({
   registerData: false,
   signed: false,
   signing: false,
+  message: 'Uploading media, this may take a minute or two.',
 
   setLoading: (loading) => {
     set({ loading })
@@ -165,7 +166,19 @@ const registerStore = create<TRegisterStore>((set) => ({
             },
           })
           .then((res) => {
-            set({ signed: true })
+            set({ message: 'Mint successful! Retrieving record.' })
+
+            const { getDevice } = deviceStore.getState()
+
+            const poller = setInterval(() => {
+              getDevice()
+              const { registered } = deviceStore.getState()
+
+              if (registered) {
+                clearInterval(poller)
+                set({ signed: true })
+              }
+            }, 5000)
           })
           .catch((err) => {
             set({ loading: false })

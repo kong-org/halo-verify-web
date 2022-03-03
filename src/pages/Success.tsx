@@ -6,9 +6,13 @@ import Divider from '../components/Divider'
 import deviceStore from '../stores/deviceStore'
 import { Navigate } from 'react-router-dom'
 import Loading from '../components/Loading'
+import registerStore from '../stores/registerStore'
+import formatDescription from '../helpers/formatDescription'
+import truncateAddress from '../helpers/truncateAddress'
 
 export default function Success() {
   const ds = deviceStore()
+  const rs = registerStore()
 
   useEffect(() => {
     if (ds.device && !ds.registered) {
@@ -22,8 +26,10 @@ export default function Success() {
     return (
       <Card>
         <CardPadding>
-          <div className="loading-wrap-2">
+          <div className="loading-wrap-2 text-center">
             <Loading />
+            <h2 className="text-lg mt-8">Minting success!</h2>
+            <p className="text-sm mt-1">Retrieving your record...</p>
           </div>
         </CardPadding>
       </Card>
@@ -34,7 +40,7 @@ export default function Success() {
 
   return (
     <Card className="relative">
-      <img src={`https://arweave.net/${ds.device.node_id}`} />
+      <img src={rs.base64Image ? rs.base64Image : `https://arweave.net/${ds.device.node_id}`} />
       <CardPadding>
         <Badge>
           <Smile /> <span className="ml-2">Successful</span>
@@ -42,13 +48,23 @@ export default function Success() {
         <h2 className="uppercase mt-4">{meta.name}</h2>
 
         <div className="success-body mt-1">
-          {ds.creator && (
+          {ds.creator ? (
             <p>
-              Created by <a href={`https://etherscan.io/address/${ds.creator}`}>{ds.creator}</a>
+              Created by{' '}
+              <a target="_blank" href={`https://etherscan.io/address/${ds.creator}`}>
+                {ds.creator}
+              </a>
+            </p>
+          ) : (
+            <p>
+              Created by{' '}
+              <a target="_blank" href={`https://etherscan.io/address/${ds.device.device_minter}`}>
+                {truncateAddress(ds.device.device_minter)}
+              </a>
             </p>
           )}
 
-          <p className="mt-3">{meta.description}</p>
+          <p className="mt-3">{formatDescription(meta.description)}</p>
         </div>
 
         <Divider />

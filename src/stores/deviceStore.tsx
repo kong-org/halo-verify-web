@@ -14,6 +14,7 @@ type TDeviceStore = {
   device: IDevice | null
   registered: boolean
   creator: string | null
+  loading: boolean
   init(): void
   getDevice(): void
   linkHalo(): void
@@ -25,6 +26,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
   device: null,
   registered: false,
   creator: null,
+  loading: false,
 
   init: () => {
     const url = URL(window.location.href, true)
@@ -37,57 +39,82 @@ const deviceStore = create<TDeviceStore>((set) => ({
   },
 
   getDevice: async () => {
+    console.log('Fetching the device')
+
     const { keys } = deviceStore.getState()
 
     // Return early if we don't have keys
     if (!keys) return
 
+    console.log('We have keys continuing')
+
+    set({ loading: true })
+
     // if we do fetch data from arweave
     const query = generateArweaveQuery(keys)
 
-    axios.post('https://arweave.net/graphql', { query }).then(async (res) => {
-      const transactions = res.data.data.transactions.edges
-      const transactionIndex = transactions.findIndex((t: any) => {
-        const tag = t.node.tags.find((tag: any) => tag === 'Device-Record-Type')
-        if (tag === 'Device-Media') return
-      })
-      const tIndex = transactionIndex > -1 ? transactionIndex : 0
+    console.log('Generating query', query)
 
-      // Create a device object from the first record
-      const mapped = [transactions[tIndex || 0]].flatMap((nodeItem: any) => {
-        const node = nodeItem.node
+    axios
+      .post('https://arweave.net/graphql', { query })
+      .then(async (res) => {
+        console.log('re got a response', res)
 
-        return {
-          node_id: node.id,
-          app_name: safeTag(node, 'App-Name', null),
-          app_version: safeTag(node, 'App-Version', null),
-          content_type: safeTag(node, 'Content-Type', null),
-          device_record_type: safeTag(node, 'Device-Record-Type', null),
-          device_id: safeTag(node, 'Device-Id', null),
-          device_address: safeTag(node, 'Device-Address', null),
-          device_manufacturer: safeTag(node, 'Device-Manufacturer', null),
-          device_model: safeTag(node, 'Device-Model', null),
-          device_merkel_root: safeTag(node, 'Device-Merkel-Root', null),
-          device_registry: safeTag(node, 'Device-Registry', null),
-          ifps_add: safeTag(node, 'IPFS-Add', null),
-          device_token_metadata: safeTag(node, 'Device-Token-Metadata', null),
-          device_minter: safeTag(node, 'Device-Minter', null),
+        const transactions = res.data.data.transactions.edges
+        const transactionIndex = transactions.findIndex((t: any) => {
+          const tag = t.node.tags.find((tag: any) => {
+            return tag.name === 'Device-Record-Type'
+          })
+
+          if (tag === 'Device-Media') return
+        })
+        const tIndex = transactionIndex > -1 ? transactionIndex : 0
+
+        console.log('Search response for device-media record index', tIndex)
+
+        // Create a device object from the first record
+        const mapped = [transactions[tIndex || 0]].flatMap((nodeItem: any) => {
+          const node = nodeItem.node
+
+          return {
+            node_id: node.id,
+            app_name: safeTag(node, 'App-Name', null),
+            app_version: safeTag(node, 'App-Version', null),
+            content_type: safeTag(node, 'Content-Type', null),
+            device_record_type: safeTag(node, 'Device-Record-Type', null),
+            device_id: safeTag(node, 'Device-Id', null),
+            device_address: safeTag(node, 'Device-Address', null),
+            device_manufacturer: safeTag(node, 'Device-Manufacturer', null),
+            device_model: safeTag(node, 'Device-Model', null),
+            device_merkel_root: safeTag(node, 'Device-Merkel-Root', null),
+            device_registry: safeTag(node, 'Device-Registry', null),
+            ifps_add: safeTag(node, 'IPFS-Add', null),
+            device_token_metadata: safeTag(node, 'Device-Token-Metadata', null),
+            device_minter: safeTag(node, 'Device-Minter', null),
+          }
+        })
+
+        console.log('Creating a device object', mapped[0])
+
+        set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media', loading: false })
+
+        console.log(mapped[0])
+
+        if (mapped[0].device_minter) {
+          // Get the creator
+          const provider: any = new ethers.providers.JsonRpcProvider(
+            'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015'
+          )
+
+          const creator = await provider.lookupAddress(mapped[0].device_minter)
+
+          set({ creator, loading: false })
         }
       })
-
-      set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media' })
-
-      if (mapped[0].device_minter) {
-        console.log('in here!', mapped[0].device_minter)
-        // Get the creator
-        const provider: any = new ethers.providers.JsonRpcProvider(
-          'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015'
-        )
-
-        const creator = await provider.lookupAddress(mapped[0].device_minter)
-        set({ creator })
-      }
-    })
+      .catch((err) => {
+        console.log(err)
+        set({ loading: false })
+      })
   },
 
   triggerScan: async (reqx: any) => {

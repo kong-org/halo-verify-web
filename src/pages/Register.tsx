@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import React from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import Button from '../components/Button'
 import Card, { CardBack, CardFooter, CardPadding } from '../components/Card'
 import Field from '../components/Field'
@@ -73,6 +73,8 @@ export default function Register() {
       </CardPadding>
       <CardFooter>
         <CardPadding>
+          {/* <Link to="/confirm">testing</Link> */}
+
           {rs.registerForm.image ? (
             <Button fullWidth onClick={rs.scanHalo}>
               Tap chip to mint nft

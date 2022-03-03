@@ -1,8 +1,10 @@
+import classNames from 'classnames'
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 import Button from '../components/Button'
 import Card, { CardBack, CardFooter, CardPadding } from '../components/Card'
 import Chip from '../components/Chip'
+import Loading from '../components/Loading'
 import deviceStore from '../stores/deviceStore'
 import registerStore from '../stores/registerStore'
 import walletStore from '../stores/walletStore'
@@ -14,23 +16,40 @@ export default function Confirm() {
   const signHalo = registerStore((s) => s.signHalo)
   const signed = registerStore((s) => s.signed)
   const device = deviceStore((s) => s.device)
+  const message = registerStore((s) => s.message)
 
   if (!device) return <Navigate to="/" />
   if (signed) return <Navigate to="/success" />
 
   return (
-    <Card className="relative" loading={loading}>
+    <Card className={classNames('relative', { 'confirm-loading': loading })}>
       <CardPadding>
         <CardBack to="/register">Confirm Minting</CardBack>
-        <img className="rounded-md" src={base64Image ? base64Image : form.imageSrc} />
+        {loading ? (
+          <div className="loading-image-message text-center">
+            <div>
+              <Loading />
+              <p className="text-sm">{message}</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <img className="rounded-md" src={base64Image ? base64Image : form.imageSrc} />
+          </>
+        )}
+
         <h2 className="text-xl mt-4">{form.name || 'Untitled'}</h2>
         <p className="text-sm">{form.description || 'No description'}</p>
       </CardPadding>
       <CardFooter>
         <CardPadding>
-          <Button fullWidth onClick={signHalo}>
-            {loading ? 'Loading...' : 'Sign to finalize'}
-          </Button>
+          {loading ? (
+            <Button fullWidth>Loading...</Button>
+          ) : (
+            <Button fullWidth onClick={signHalo}>
+              Sign to finalize
+            </Button>
+          )}
         </CardPadding>
       </CardFooter>
     </Card>

@@ -6,9 +6,5 @@ interface IProps {
 }
 
 export default function Chip({ detected }: IProps) {
-  if (detected) {
-    return <ChipSVG />
-  }
-
-  return <div className="chip"></div>
+  return <ChipSVG />
 }
