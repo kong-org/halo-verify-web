@@ -1,29 +1,41 @@
 {
-  "name": "kong-halo",
-  "version": "0.1.0",
+  "name": "kong-halo-scanner",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^13.5.0",
+    "@types/axios": "^0.14.0",
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.25",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "@types/url-parse": "^1.4.8",
+    "@walletconnect/client": "^1.7.1",
+    "@walletconnect/qrcode-modal": "^1.7.1",
+    "axios": "^0.26.0",
+    "buffer": "^6.0.3",
     "classnames": "^2.3.1",
+    "ethers": "^5.5.4",
+    "ipfs-only-hash": "^4.0.0",
+    "keccak256": "^1.0.6",
+    "process": "^0.11.10",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
+    "stream-browserify": "^3.0.0",
     "typescript": "^4.5.5",
+    "url-parse": "^1.5.10",
     "web-vitals": "^2.1.4",
     "zustand": "^3.7.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -48,6 +60,7 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.3.1",
+    "react-app-rewired": "^2.1.11",
     "sass": "^1.49.7"
   }
 }

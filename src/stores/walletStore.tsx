@@ -1,44 +1,44 @@
 import create from 'zustand'
+import connector from '../walletConnect'
 
 declare var window: any
 
 type TWalletStore = {
-  hasMetaMask: boolean
   requestAccess(): void
+  connected: boolean
   ready: boolean
   address: string
+  chainId: number
   dropdownActive: boolean
   setDropdownActive(dropdownActive: boolean): void
   disconnect(): void
+  connect(address: string, chainId: number): void
 }
 
 const walletStore = create<TWalletStore>((set) => ({
-  hasMetaMask: typeof window.ethereum !== 'undefined',
-  address: '',
+  address: connector?.accounts[0] || '',
+  chainId: connector?.chainId || 1,
   ready: false,
   dropdownActive: false,
-
-  setDropdownActive: (dropdownActive) => {
-    set({ dropdownActive })
-  },
+  connected: connector.connected,
 
   requestAccess: async () => {
-    const address = walletStore.getState().address
-
-    try {
-      if (!address || address.length === 0) {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-        set({ address: accounts[0], ready: true })
-      } else {
-        set({ ready: true })
-      }
-    } catch {
-      set({ ready: true })
+    if (!connector.connected) {
+      connector.createSession()
     }
   },
 
-  disconnect: () => {
-    set({ dropdownActive: false })
+  connect: (address, chainId) => {
+    set({ address, chainId, connected: connector.connected })
+  },
+
+  disconnect: async () => {
+    await connector.killSession()
+    set({ dropdownActive: false, address: '', chainId: 0, connected: false })
+  },
+
+  setDropdownActive: (dropdownActive) => {
+    set({ dropdownActive })
   },
 }))
 

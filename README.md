@@ -1,8 +1,8 @@
-# Getting Started with Create React App
+# HaLo Scanner App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This app scans HaLo NFC chip. A HaLo is a "hardware locked" cryptographic asset such as a print, collectable or merchandise. HaLo chips can be scanned via NFC to authenticate the asset as well as make any claims for fungible or non-fungbile assets if available.
 
-## Available Scripts
+## Scripts
 
 In the project directory, you can run:
 
