@@ -135,6 +135,7 @@ const registerStore = create<TRegisterStore>((set) => ({
   },
 
   signHalo: async () => {
+    console.log(`sign called`)
     const { keys } = deviceStore.getState()
     const { address, chainId } = walletStore.getState()
     const device_id = keys?.primaryPublicKeyHash.substring(2)
@@ -143,7 +144,11 @@ const registerStore = create<TRegisterStore>((set) => ({
     const device_token_metadata = { name, description }
     const { block, sigMsg, sigSplit } = registerStore.getState()
 
+    console.log(`block ${block}`)
+    console.log(`sig ${sigSplit}`)
+    console.log(`sig msg ${sigMsg}`)
     const ipfsCid = await ipfsHash.of(image)
+    console.log(`ipfs hash ${image}`)
 
     // Draft Message Parameters
     const typedData = {
@@ -182,6 +187,8 @@ const registerStore = create<TRegisterStore>((set) => ({
         },
       },
     };
+
+    console.log(`typedData ${typedData}`)
 
     const msgParams = [
       address, // Required
