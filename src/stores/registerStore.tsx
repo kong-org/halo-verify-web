@@ -147,8 +147,10 @@ const registerStore = create<TRegisterStore>((set) => ({
     console.log(`block ${block}`)
     console.log(`sig ${sigSplit}`)
     console.log(`sig msg ${sigMsg}`)
+    
+    console.log(`base64 of image ${base64Image}`)
 
-    const ipfsCid = await ipfsHash.of(base64Image.data)
+    const ipfsCid = await ipfsHash.of(base64Image)
     console.log(`ipfs hash ${ipfsCid}`)
 
     // Draft Message Parameters
