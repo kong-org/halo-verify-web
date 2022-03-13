@@ -8,6 +8,10 @@ import unpackDERSig from '../helpers/unpackDERSig'
 import formatMinterSig from '../helpers/formatMinterSig'
 import generateCmd from '../helpers/generateCMD'
 import axios from 'axios'
+const ipfsHash = require('ipfs-only-hash')
+
+const ETH_NODE = 'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015';
+const BRIDGE_NODE = 'https://bridge-ropsten-t5n3k.ondigitalocean.app/mint';
 
 type TRegisterStore = {
   urlMode: boolean
@@ -111,10 +115,11 @@ const registerStore = create<TRegisterStore>((set) => ({
     }))
   },
 
+  // TODO: sign the address of the connected wallet with blockhash if available.
   scanHalo: async () => {
     const { triggerScan } = deviceStore.getState()
     const provider: any = new ethers.providers.JsonRpcProvider(
-      'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015'
+      ETH_NODE
     )
 
     const block = await provider.getBlock()
@@ -128,24 +133,81 @@ const registerStore = create<TRegisterStore>((set) => ({
 
   signHalo: async () => {
     const { keys } = deviceStore.getState()
-    const { address } = walletStore.getState()
+    const { address, chainId } = walletStore.getState()
     const device_id = keys?.primaryPublicKeyHash.substring(2)
-    const msgParams = [address, ethers.utils.hashMessage(device_id!)]
 
+    const { name, description, image } = registerStore.getState().registerForm
+    const device_token_metadata = { name, description }
+    const { block, sigSplit } = registerStore.getState()
+
+    const ipfsCid = await ipfsHash.of(image)
+
+    // Draft Message Parameters
+    const typedData = {
+      types: {
+        EIP712Domain: [
+          { name: "name", type: "string" },
+          { name: "version", type: "string" },
+          { name: "chainId", type: "uint256" },
+        ],
+        Device: [
+          { name: "id", type: "string" },
+          { name: "signature", type: "string" },          
+          { name: "blockNumberSigned", type: "string" },  
+        ],
+        Media: [
+          { name: "mediaCid", type: "string" },
+          { name: "tokenMetadata", type: "string" },
+          { name: "minterAddress", type: "address" },
+          { name: "device", type: "Device" },
+        ],
+      },
+      primaryType: "Media",
+      domain: {
+        name: "ERS",
+        version: "0.1.0",
+        chainId: 1,
+      },
+      message: {
+        mediaCid: ipfsCid,
+        tokenMetadata: JSON.stringify(device_token_metadata),
+        minterAddress: address,
+        device: {
+          id: device_id,
+          signature: JSON.stringify(sigSplit),
+          blockNumberSigned: block.number,
+        },
+      },
+    };
+
+    const msgParams = [
+      address, // Required
+      typedData, // Required
+    ];
+    
+    // const sigData = {
+    //   media: ipfsCid,
+    //   device_id,
+    //   device_token_metadata: JSON.stringify(device_token_metadata),
+    //   minter_addr: address,
+    //   blockNumber: block.number,
+    //   device_sig: JSON.stringify(sigSplit)
+    // }
+
+    // TODO: sign the full data param, not just device_id.
+    // const msgParams = [address, ethers.utils.hashMessage(device_id!)]
+  
     connector
       .signMessage(msgParams)
       .then((result) => {
         set({ loading: true })
-
-        const { name, description, image } = registerStore.getState().registerForm
-        const device_token_metadata = { name, description }
-        const { block, sigSplit } = registerStore.getState()
 
         const data = {
           media: image,
           device_id,
           device_token_metadata: JSON.stringify(device_token_metadata),
           minter_addr: address,
+          chainId: chainId,
           blockNumber: block.number,
           device_sig: JSON.stringify(sigSplit),
           minter_sig: JSON.stringify(formatMinterSig(result)),
@@ -160,7 +222,7 @@ const registerStore = create<TRegisterStore>((set) => ({
         const form = getFormData(data)
 
         axios
-          .post('https://bridge-ropsten-t5n3k.ondigitalocean.app/mint', form, {
+          .post(BRIDGE_NODE, form, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },

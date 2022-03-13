@@ -16,7 +16,7 @@ export default function Register() {
 
   const handleFileChange = (e: any) => {
     const file = e.target.files[0]
-    file.size < 5000001 ? rs.changeFileField(file) : alert('Image must be 5mb in size or less')
+    file.size < 5000001 ? rs.changeFileField(file) : alert('Media must be 5mb in size or less')
   }
 
   if (!ds.device) return <Navigate to="/" />
@@ -77,7 +77,7 @@ export default function Register() {
 
           {rs.registerForm.image ? (
             <Button fullWidth onClick={rs.scanHalo}>
-              Tap chip to mint nft
+              Tap chip to mint HaLo
             </Button>
           ) : (
             <Button fullWidth disabled>
