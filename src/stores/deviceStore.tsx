@@ -95,12 +95,14 @@ const deviceStore = create<TDeviceStore>((set) => ({
             ifps_add: safeTag(node, 'IPFS-Add', null),
             device_token_metadata: safeTag(node, 'Device-Token-Metadata', null),
             device_minter: safeTag(node, 'Device-Minter', null),
+            chain_id: safeTag(node, 'Device-Minter-Chain-Id', null),
           }
         })
 
         console.log('Creating a device object', mapped[0])
 
-        set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media', loading: false })
+        // Filter for only chainId 1. TODO: show records created for multiple chains.
+        set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media' && mapped[0].chain_id === "1", loading: false })
 
         console.log(mapped[0])
 
