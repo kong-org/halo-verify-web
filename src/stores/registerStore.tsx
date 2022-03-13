@@ -28,7 +28,7 @@ type TRegisterStore = {
     imageSrc: string
     image: any
   }
-
+  sigMsg: string
   sigSplit: any
   block: any
 
@@ -55,6 +55,7 @@ const registerStore = create<TRegisterStore>((set) => ({
     imageSrc: '',
     image: null,
   },
+  sigMsg: '',
   sigSplit: false,
   block: false,
   registerData: false,
@@ -123,12 +124,14 @@ const registerStore = create<TRegisterStore>((set) => ({
     )
 
     const block = await provider.getBlock()
-    const blockHash = generateCmd(1, 1, block.hash)
-    const sig = await triggerScan(blockHash)
+    // Note: we may want to change this format to accomodate more data than the blockHash in the future.
+    const sigMsg = block.hash
+    const sigCmd = generateCmd(1, 1, sigMsg)
+    const sig = await triggerScan(sigCmd)
     const sigString = buf2hex(sig)
     const sigSplit = unpackDERSig(sigString)
 
-    set({ sigSplit, block })
+    set({ sigSplit, sigMsg, block })
   },
 
   signHalo: async () => {
@@ -138,7 +141,7 @@ const registerStore = create<TRegisterStore>((set) => ({
 
     const { name, description, image } = registerStore.getState().registerForm
     const device_token_metadata = { name, description }
-    const { block, sigSplit } = registerStore.getState()
+    const { block, sigMsg, sigSplit } = registerStore.getState()
 
     const ipfsCid = await ipfsHash.of(image)
 
@@ -153,7 +156,7 @@ const registerStore = create<TRegisterStore>((set) => ({
         Device: [
           { name: "id", type: "string" },
           { name: "signature", type: "string" },          
-          { name: "blockNumberSigned", type: "string" },  
+          { name: "messageSigned", type: "string" },  
         ],
         Media: [
           { name: "mediaCid", type: "string" },
@@ -175,7 +178,7 @@ const registerStore = create<TRegisterStore>((set) => ({
         device: {
           id: device_id,
           signature: JSON.stringify(sigSplit),
-          blockNumberSigned: block.number,
+          messageSigned: sigMsg,
         },
       },
     };
@@ -206,11 +209,12 @@ const registerStore = create<TRegisterStore>((set) => ({
           media: image,
           device_id,
           device_token_metadata: JSON.stringify(device_token_metadata),
-          minter_addr: address,
-          chainId: chainId,
-          blockNumber: block.number,
           device_sig: JSON.stringify(sigSplit),
+          device_sig_msg: sigMsg, // Note: we may want to include more data here than just block information, hence blockNumber alone is insufficient.
+          blockNumber: block.number,
+          minter_addr: address,
           minter_sig: JSON.stringify(formatMinterSig(result)),
+          minter_chain_id: chainId
         }
 
         function getFormData(object: any) {
