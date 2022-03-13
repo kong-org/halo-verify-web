@@ -22,4 +22,5 @@ export interface IDevice {
   device_minter: string
   device_registry: string
   ifps_add: string
+  chain_id: string
 }
