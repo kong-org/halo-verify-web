@@ -27,6 +27,7 @@ type TRegisterStore = {
     description: string
     imageSrc: string
     image: any
+    imageByteArray: any
   }
   sigMsg: string
   sigSplit: any
@@ -54,6 +55,7 @@ const registerStore = create<TRegisterStore>((set) => ({
     description: '',
     imageSrc: '',
     image: null,
+    imageByteArray: null,
   },
   sigMsg: '',
   sigSplit: false,
@@ -77,17 +79,21 @@ const registerStore = create<TRegisterStore>((set) => ({
   },
 
   changeFileField: (file: any) => {
+    // Generate a preview
+    var FR = new FileReader()
+
+    // Read the file as bytes
+    const imageByteArray = FR.readAsArrayBuffer(file)
+
     // Set state to the file
     set((state) => ({
       registerForm: {
         ...state.registerForm,
         image: file,
+        imageByteArray: imageByteArray,
       },
       previewing: true,
     }))
-
-    // Generate a preview
-    var FR = new FileReader()
 
     FR.addEventListener('load', function (e: any) {
       set({ base64Image: e.target.result })
@@ -110,6 +116,7 @@ const registerStore = create<TRegisterStore>((set) => ({
         ...state.registerForm,
         image: false,
         imageSrc: '',
+        imageByteArray: '',
       },
       base64Image: '',
       previewing: false,
@@ -140,15 +147,15 @@ const registerStore = create<TRegisterStore>((set) => ({
     const { address, chainId } = walletStore.getState()
     const device_id = keys?.primaryPublicKeyHash.substring(2)
 
-    const { name, description, image } = registerStore.getState().registerForm
+    const { name, description, image, imageByteArray } = registerStore.getState().registerForm
     const device_token_metadata = { name, description }
     const { block, sigMsg, sigSplit } = registerStore.getState()
 
     console.log(`block ${block}`)
     console.log(`sig ${sigSplit}`)
     console.log(`sig msg ${sigMsg}`)
-    const ipfsCid = await ipfsHash.of(image)
-    console.log(`ipfs hash ${image}`)
+    const ipfsCid = await ipfsHash.of(imageByteArray)
+    console.log(`ipfs hash ${ipfsCid}`)
 
     // Draft Message Parameters
     const typedData = {

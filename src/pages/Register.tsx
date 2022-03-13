@@ -41,7 +41,7 @@ export default function Register() {
                 name="image"
               />
               <label htmlFor="image" className="button small black">
-                Upload Image
+                Add Image
               </label>
             </div>
           </GrayCenterBox>
