@@ -142,13 +142,13 @@ const registerStore = create<TRegisterStore>((set) => ({
 
     const { name, description, image } = registerStore.getState().registerForm
     const device_token_metadata = { name, description }
-    const { block, sigMsg, sigSplit } = registerStore.getState()
+    const { block, sigMsg, sigSplit, base64Image } = registerStore.getState()
 
     console.log(`block ${block}`)
     console.log(`sig ${sigSplit}`)
     console.log(`sig msg ${sigMsg}`)
 
-    const ipfsCid = await ipfsHash.of(image.data)
+    const ipfsCid = await ipfsHash.of(base64Image.data)
     console.log(`ipfs hash ${ipfsCid}`)
 
     // Draft Message Parameters
