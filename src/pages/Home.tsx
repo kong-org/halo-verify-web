@@ -16,7 +16,7 @@ function LinkButton() {
   if (!keys) {
     return (
       <Button fullWidth onClick={linkHalo}>
-        Scan Halo
+        Initiate Scan
       </Button>
     )
   } else if (device && registered) {
@@ -30,19 +30,19 @@ function LinkButton() {
   } else if (device && !connected && !registered) {
     return (
       <Button fullWidth disabled>
-        Link Halo
+        Mint Halo
       </Button>
     )
   } else if (device && keys && !registered) {
     return (
       <Button to={'/register'} fullWidth>
-        Link Halo
+        Mint Halo
       </Button>
     )
   } else {
     return (
       <Button fullWidth disabled>
-        Link Halo
+        Mint Halo
       </Button>
     )
   }
@@ -71,19 +71,19 @@ export default function Home() {
               Detected
             </h1>
             <p className="text-dark-gray text-sm mt-4 mb-4">
-              This device hasn’t been registered. Tap link below to link device.
+              This chip hasn’t been registered. Tap link below to mint HaLo.
             </p>
-            <h3 className="font-normal mt-4 mb-1 text-light-gray text-xs">Primary public key</h3>
+            <h3 className="font-normal mt-4 mb-1 text-light-gray text-xs">Device ID</h3>
             <p className="break-word font-bold text-smb">{keys?.primaryPublicKeyHash}</p>
           </>
         ) : (
           <>
             <h1 className="text-3xl mt-6 font-expanded uppercase">
-              Halo
+              No Halo
               <br />
-              Undetected
+              Detected
             </h1>
-            <p className="text-dark-gray text-sm mt-4 mb-4">Please link your halo chip using the button below.</p>
+            <p className="text-dark-gray text-sm mt-4 mb-4">Scan HaLo by tapping the button below and holding the chip to your smartphone NFT antenna.</p>
           </>
         )}
       </CardPadding>
@@ -91,7 +91,7 @@ export default function Home() {
         <CardPadding>
           {LinkButton()}
           {!connected && !registered && (
-            <p className="text-center text-xs text-light-gray uppercase mt-4">Connect wallet to link Halo</p>
+            <p className="text-center text-xs text-light-gray uppercase mt-4">Connect wallet to mint HaLo</p>
           )}
         </CardPadding>
       </CardFooter>

@@ -1,6 +1,6 @@
 {
-  "name": "kong-halo",
-  "version": "0.1.0",
+  "name": "kong-halo-scanner",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.2",
@@ -18,6 +18,7 @@
     "buffer": "^6.0.3",
     "classnames": "^2.3.1",
     "ethers": "^5.5.4",
+    "ipfs-only-hash": "^4.0.0",
     "keccak256": "^1.0.6",
     "process": "^0.11.10",
     "react": "^17.0.2",

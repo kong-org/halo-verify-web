@@ -9,6 +9,10 @@ import { IDevice, IKeys } from '../types'
 import generateArweaveQuery from '../helpers/generateArweaveQuery'
 import { ethers } from 'ethers'
 
+const ETH_NODE = 'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015';
+const ARWEAVE_NODE = 'https://arweave.net/graphql';
+const TAG_DOMAIN = '3000.robbyk.xyz';
+
 type TDeviceStore = {
   keys: IKeys | null
   device: IDevice | null
@@ -56,7 +60,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
     console.log('Generating query', query)
 
     axios
-      .post('https://arweave.net/graphql', { query })
+      .post(ARWEAVE_NODE, { query })
       .then(async (res) => {
         console.log('re got a response', res)
 
@@ -103,7 +107,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
         if (mapped[0].device_minter) {
           // Get the creator
           const provider: any = new ethers.providers.JsonRpcProvider(
-            'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015'
+            ETH_NODE
           )
 
           const creator = await provider.lookupAddress(mapped[0].device_minter)
@@ -132,7 +136,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
             113, 241, 176, 49, 249, 113, 39, 237, 135, 170, 177, 61, 15, 14, 105, 236, 120, 140, 4, 41, 65, 225, 107,
             63, 214, 129, 133, 223, 169, 200, 21, 88,
           ]),
-          rpId: '3000.robbyk.xyz',
+          rpId: TAG_DOMAIN,
           timeout: 60000,
           userVerification: 'discouraged',
         },

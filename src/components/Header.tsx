@@ -13,12 +13,12 @@ export default function Header() {
   useEffect(() => {
     connector.on('connect', (error, payload) => {
       if (error) return
-      store.connect(payload.params[0].accounts[0])
+      store.connect(payload.params[0].accounts[0], payload.params[0].chainId)
     })
 
     connector.on('session_update', (error, payload) => {
       if (error) return
-      store.connect(payload.params[0].accounts[0])
+      store.connect(payload.params[0].accounts[0], payload.params[0].chainId)
     })
 
     connector.on('disconnect', (error, payload) => {
