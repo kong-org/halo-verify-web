@@ -144,12 +144,6 @@ const registerStore = create<TRegisterStore>((set) => ({
     const device_token_metadata = { name, description }
     const { block, sigMsg, sigSplit, base64Image } = registerStore.getState()
 
-    console.log(`block ${block}`)
-    console.log(`sig ${sigSplit}`)
-    console.log(`sig msg ${sigMsg}`)
-    
-    console.log(`base64 of image ${base64Image}`)
-
     const ipfsCid = await ipfsHash.of(base64Image)
     console.log(`ipfs hash ${ipfsCid}`)
 
