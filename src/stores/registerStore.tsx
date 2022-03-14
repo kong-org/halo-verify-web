@@ -205,9 +205,11 @@ const registerStore = create<TRegisterStore>((set) => ({
     // const msgParams = [address, ethers.utils.hashMessage(device_id!)]
   
     connector
-      .signMessage(msgParams)
+      .signTypedData(msgParams)
       .then((result) => {
         set({ loading: true })
+
+        console.log(`sign called.`)
 
         const data = {
           media: image,
