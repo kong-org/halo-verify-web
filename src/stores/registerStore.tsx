@@ -147,6 +147,8 @@ const registerStore = create<TRegisterStore>((set) => ({
     const ipfsCid = await ipfsHash.of(base64Image)
     console.log(`ipfs hash ${ipfsCid}`)
 
+
+    
     // Draft Message Parameters
     const typedData = {
       types: {
@@ -154,6 +156,7 @@ const registerStore = create<TRegisterStore>((set) => ({
           { name: "name", type: "string" },
           { name: "version", type: "string" },
           { name: "chainId", type: "uint256" },
+          { name: "verifyingContract", type: "address" },
         ],
         Device: [
           { name: "id", type: "string" },
@@ -172,6 +175,7 @@ const registerStore = create<TRegisterStore>((set) => ({
         name: "ERS",
         version: "0.1.0",
         chainId: 1,
+        verifyingContract: "0x0000000000000000000000000000000000000000",
       },
       message: {
         mediaCid: ipfsCid,
@@ -185,7 +189,7 @@ const registerStore = create<TRegisterStore>((set) => ({
       },
     };
 
-    console.log(`typedData ${typedData}`)
+    console.log(typedData)
 
     const msgParams = [
       address, // Required
@@ -208,8 +212,6 @@ const registerStore = create<TRegisterStore>((set) => ({
       .signTypedData(msgParams)
       .then((result) => {
         set({ loading: true })
-
-        console.log(`sign called.`)
 
         const data = {
           media: image,
