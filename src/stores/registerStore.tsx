@@ -147,9 +147,6 @@ const registerStore = create<TRegisterStore>((set) => ({
     const ipfsCid = await ipfsHash.of(base64Image)
     console.log(`ipfs hash ${ipfsCid}`)
 
-
-    
-    // Draft Message Parameters
     const typedData = {
       types: {
         EIP712Domain: [
@@ -160,13 +157,15 @@ const registerStore = create<TRegisterStore>((set) => ({
         ],
         Device: [
           { name: "id", type: "string" },
-          { name: "signature", type: "string" },          
-          { name: "messageSigned", type: "string" },  
+          { name: "signatureR", type: "string" },
+          { name: "signatureS", type: "string" },           
+          { name: "message", type: "string" },  
         ],
         Media: [
-          { name: "mediaCid", type: "string" },
-          { name: "tokenMetadata", type: "string" },
-          { name: "minterAddress", type: "address" },
+          { name: "cid", type: "string" },
+          { name: "name", type: "string" },
+          { name: "description", type: "string" },
+          { name: "minter", type: "address" },
           { name: "device", type: "Device" },
         ],
       },
@@ -178,17 +177,20 @@ const registerStore = create<TRegisterStore>((set) => ({
         verifyingContract: "0x0000000000000000000000000000000000000000",
       },
       message: {
-        mediaCid: ipfsCid,
-        tokenMetadata: JSON.stringify(device_token_metadata),
-        minterAddress: address,
+        cid: ipfsCid,
+        name: device_token_metadata.name,
+        description: device_token_metadata.description,
+        minter: address,
         device: {
           id: device_id,
-          signature: JSON.stringify(sigSplit),
-          messageSigned: sigMsg,
+          signatureR: sigSplit.r,
+          signatureS: sigSplit.s,
+          message: sigMsg,
         },
       },
     };
 
+    console.log(`chainId is ${chainId}`)
     console.log(typedData)
 
     const msgParams = [
@@ -213,6 +215,8 @@ const registerStore = create<TRegisterStore>((set) => ({
       .then((result) => {
         set({ loading: true })
 
+        console.log(`submitting data`)
+        
         const data = {
           media: image,
           device_id,
