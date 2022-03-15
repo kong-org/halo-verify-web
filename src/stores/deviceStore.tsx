@@ -106,7 +106,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
 
         console.log(mapped[0])
 
-        if (mapped[0].device_minter) {
+        if (mapped[0].device_minter && mapped[0].chain_id === "1") {
           // Get the creator
           const provider: any = new ethers.providers.JsonRpcProvider(
             ETH_NODE
