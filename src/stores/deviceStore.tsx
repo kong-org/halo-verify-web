@@ -11,7 +11,7 @@ import { ethers } from 'ethers'
 
 const ETH_NODE = 'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015';
 const ARWEAVE_NODE = 'https://arweave.net/graphql';
-const TAG_DOMAIN = 'dev.vrfy.ch';
+const TAG_DOMAIN = 'tasty-insect-96.loca.lt';
 
 type TDeviceStore = {
   keys: IKeys | null
