@@ -153,13 +153,12 @@ const registerStore = create<TRegisterStore>((set) => ({
           { name: "name", type: "string" },
           { name: "version", type: "string" },
           { name: "chainId", type: "uint256" },
-          { name: "verifyingContract", type: "address" },
         ],
         Device: [
           { name: "id", type: "string" },
           { name: "signatureR", type: "string" },
           { name: "signatureS", type: "string" },           
-          { name: "message", type: "string" },  
+          { name: "digest", type: "string" },  
         ],
         Media: [
           { name: "cid", type: "string" },
@@ -174,7 +173,6 @@ const registerStore = create<TRegisterStore>((set) => ({
         name: "ERS",
         version: "0.1.0",
         chainId: 1,
-        verifyingContract: "0x0000000000000000000000000000000000000000",
       },
       message: {
         cid: ipfsCid,
@@ -185,7 +183,7 @@ const registerStore = create<TRegisterStore>((set) => ({
           id: device_id,
           signatureR: sigSplit.r,
           signatureS: sigSplit.s,
-          message: sigMsg,
+          digest: sigMsg,
         },
       },
     };
@@ -260,14 +258,14 @@ const registerStore = create<TRegisterStore>((set) => ({
           })
           .catch((err) => {
             set({ loading: false })
-            alert('Something went wrong.')
+            alert('Something went wrong post.')
             console.log(err)
           })
       })
       .catch((error) => {
         set({ loading: false })
-        alert('Something went wrong.')
         console.log(error)
+        alert('Something went wrong pre.')
       })
   },
 
