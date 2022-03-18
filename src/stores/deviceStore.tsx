@@ -12,7 +12,7 @@ import walletStore from './walletStore'
 import { getChainData } from "../helpers/getChainData"
 
 // Note: one can create "test" records by modifying the Eth node and selecting a different chain in the wallet which signs.
-const ARWEAVE_NODE = process.env.REACT_APP_ARWEAVE_NODE || "https://arweave.net/graphql";
+const ARWEAVE_GRAPHQL = process.env.REACT_APP_ARWEAVE_NODE + "/graphql" || "https://arweave.net/graphql";
 const TAG_DOMAIN = process.env.REACT_APP_TAG_DOMAIN;
 
 // TODO: allow the user to select a chain id
@@ -68,7 +68,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
     console.log('Generating query', query)
 
     axios
-      .post(ARWEAVE_NODE, { query })
+      .post(ARWEAVE_GRAPHQL, { query })
       .then(async (res) => {
         console.log('re got a response', res)
 

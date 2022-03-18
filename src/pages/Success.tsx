@@ -9,6 +9,16 @@ import Loading from '../components/Loading'
 import registerStore from '../stores/registerStore'
 import formatDescription from '../helpers/formatDescription'
 import truncateAddress from '../helpers/truncateAddress'
+import walletStore from '../stores/walletStore'
+import { getChainData } from "../helpers/getChainData"
+
+const ARWEAVE_NODE = process.env.REACT_APP_ARWEAVE_NODE || "https://arweave.net";
+
+// TODO: allow the user to select a chain id
+const { chainId } = walletStore.getState()
+
+const CHAIN_ID = chainId || 1;
+const EXPLORER = getChainData(CHAIN_ID).explorer
 
 export default function Success() {
   const ds = deviceStore()
@@ -40,7 +50,7 @@ export default function Success() {
 
   return (
     <Card className="relative">
-      <img src={rs.base64Image ? rs.base64Image : `https://arweave.net/${ds.device.node_id}`} />
+      <img src={rs.base64Image ? rs.base64Image : `${ARWEAVE_NODE}/${ds.device.node_id}`} />
       <CardPadding>
         <Badge>
           <Smile /> <span className="ml-2">Successful</span>
@@ -51,14 +61,14 @@ export default function Success() {
           {ds.creator ? (
             <p>
               Created by{' '}
-              <a target="_blank" href={`https://etherscan.io/address/${ds.creator}`}>
+              <a target="_blank" href={`${EXPLORER}/${ds.creator}`}>
                 {ds.creator}
               </a>
             </p>
           ) : (
             <p>
               Created by{' '}
-              <a target="_blank" href={`https://etherscan.io/address/${ds.device.device_minter}`}>
+              <a target="_blank" href={`${EXPLORER}/${ds.device.device_minter}`}>
                 {truncateAddress(ds.device.device_minter)}
               </a>
             </p>
