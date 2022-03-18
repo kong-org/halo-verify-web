@@ -8,10 +8,18 @@ import buf2hex from '../helpers/bufToHex'
 import { IDevice, IKeys } from '../types'
 import generateArweaveQuery from '../helpers/generateArweaveQuery'
 import { ethers } from 'ethers'
+import walletStore from './walletStore'
+import { getChainData } from "../helpers/getChainData"
 
-const ETH_NODE = 'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015';
-const ARWEAVE_NODE = 'https://arweave.net/graphql';
-const TAG_DOMAIN = 'tasty-insect-96.loca.lt';
+// Note: one can create "test" records by modifying the Eth node and selecting a different chain in the wallet which signs.
+const ARWEAVE_NODE = process.env.REACT_APP_ARWEAVE_NODE || "https://arweave.net/graphql";
+const TAG_DOMAIN = process.env.REACT_APP_TAG_DOMAIN;
+
+// TODO: allow the user to select a chain id
+const { chainId } = walletStore.getState()
+
+const CHAIN_ID = chainId || 1;
+const ETH_NODE = getChainData(CHAIN_ID).rpc_url
 
 type TDeviceStore = {
   keys: IKeys | null
@@ -102,11 +110,10 @@ const deviceStore = create<TDeviceStore>((set) => ({
         console.log('Creating a device object', mapped[0])
 
         // Filter for only chainId 1. TODO: show records created for multiple chains.
-        set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media' && mapped[0].chain_id === "1", loading: false })
+        console.log(`filtering for + ${CHAIN_ID}`)
+        set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media' && +mapped[0].chain_id === CHAIN_ID, loading: false })
 
-        console.log(mapped[0])
-
-        if (mapped[0].device_minter && mapped[0].chain_id === "1") {
+        if (mapped[0].device_minter && mapped[0].chain_id === CHAIN_ID) {
           // Get the creator
           const provider: any = new ethers.providers.JsonRpcProvider(
             ETH_NODE
