@@ -8,6 +8,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "mainnet",
     chain_id: 1,
     network_id: 1,
+    explorer: "https://etherscan.io/address",
     rpc_url: "https://mainnet.infura.io/v3/%API_KEY%",
     native_currency: {
       symbol: "ETH",
@@ -24,7 +25,8 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "ropsten",
     chain_id: 3,
     network_id: 3,
-    rpc_url: "https://ropsten.infura.io/v3/b963b7d609144f3cbf18d7077ce762bd",
+    explorer: "",
+    rpc_url: "https://ropsten.infura.io/v3/%API_KEY%",
     native_currency: {
       symbol: "ETH",
       name: "Ether",
@@ -40,6 +42,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "rinkeby",
     chain_id: 4,
     network_id: 4,
+    explorer: "",
     rpc_url: "https://rinkeby.infura.io/v3/%API_KEY%",
     native_currency: {
       symbol: "ETH",
@@ -56,6 +59,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "goerli",
     chain_id: 5,
     network_id: 5,
+    explorer: "",
     rpc_url: "https://goerli.infura.io/v3/%API_KEY%",
     native_currency: {
       symbol: "ETH",
@@ -72,6 +76,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "mainnet",
     chain_id: 30,
     network_id: 30,
+    explorer: "",
     rpc_url: "https://public-node.rsk.co",
     native_currency: {
       symbol: "RSK",
@@ -88,6 +93,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "kovan",
     chain_id: 42,
     network_id: 42,
+    explorer: "",
     rpc_url: "https://kovan.infura.io/v3/%API_KEY%",
     native_currency: {
       symbol: "ETH",
@@ -104,6 +110,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "mainnet",
     chain_id: 61,
     network_id: 1,
+    explorer: "",
     rpc_url: "https://ethereumclassic.network",
     native_currency: {
       symbol: "ETH",
@@ -120,6 +127,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "sokol",
     chain_id: 77,
     network_id: 77,
+    explorer: "",
     rpc_url: "https://sokol.poa.network",
     native_currency: {
       symbol: "POA",
@@ -136,6 +144,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "core",
     chain_id: 99,
     network_id: 99,
+    explorer: "",
     rpc_url: "https://core.poa.network",
     native_currency: {
       symbol: "POA",
@@ -152,6 +161,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "dai",
     chain_id: 100,
     network_id: 100,
+    explorer: "",
     rpc_url: "https://dai.poa.network",
     native_currency: {
       symbol: "xDAI",
@@ -168,6 +178,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     network: "mainnet",
     chain_id: 820,
     network_id: 1,
+    explorer: "",
     rpc_url: "https://clo-geth.0xinfra.com/",
     native_currency: {
       symbol: "CLO",
@@ -181,6 +192,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     name: "Polygon Testnet Mumbai",
     chain: "Polygon",
     network: "mumbai",
+    explorer: "",
     rpc_url: "https://rpc-mumbai.maticvigil.com",
     native_currency: {
       name: "MATIC",
@@ -197,6 +209,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     name: "Polygon Mainnet",
     chain: "Polygon",
     network: "mainnet",
+    explorer: "",
     rpc_url: "https://rpc-mainnet.maticvigil.com",
     native_currency: {
       name: "MATIC",
@@ -213,6 +226,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     name: "Avalanche Fuji Testnet",
     chain: "AVAX",
     network: "fuji",
+    explorer: "",
     rpc_url: "https://api.avax-test.network/ext/bc/C/rpc",
     native_currency: {
       name: "Avalanche",
@@ -229,6 +243,7 @@ export const SUPPORTED_CHAINS: IChainData[] = [
     name: "Avalanche Mainnet",
     chain: "AVAX",
     network: "mainnet",
+    explorer: "",
     rpc_url: "https://api.avax.network/ext/bc/C/rpc",
     native_currency: {
       name: "Avalanche",
@@ -255,11 +270,13 @@ export const SUPPORTED_CHAINS: IChainData[] = [
       contractAddress: "",
       balance: "",
     },
+    explorer: "",
     rpc_url: "https://arbitrum-mainnet.infura.io/v3/%API_KEY%",
   },
   {
     name: "Optimism",
     chain: "ETH",
+    explorer: "",
     rpc_url: "https://mainnet.optimism.io/",
     network: "mainnet",
     native_currency: {

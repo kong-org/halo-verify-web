@@ -40,6 +40,7 @@ export interface IChainData {
   network: string;
   chain_id: number;
   network_id: number;
+  explorer: string;
   rpc_url: string;
   native_currency: IAssetData;
 }
