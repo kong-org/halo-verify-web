@@ -9,9 +9,15 @@ import formatMinterSig from '../helpers/formatMinterSig'
 import generateCmd from '../helpers/generateCMD'
 import axios from 'axios'
 const ipfsHash = require('ipfs-only-hash')
+import { getChainData } from "../helpers/getChainData"
 
-const ETH_NODE = 'https://mainnet.infura.io/v3/273c16c48360429b910360f9a0591015';
-const BRIDGE_NODE = 'https://bridge-ropsten-t5n3k.ondigitalocean.app/mint';
+const BRIDGE_MINT_ENDPOINT = process.env.REACT_APP_BRIDGE_NODE + '/mint';
+
+// TODO: allow the user to select a chain id
+const { chainId } = walletStore.getState()
+
+const CHAIN_ID = chainId || 1;
+const ETH_NODE = getChainData(CHAIN_ID).rpc_url
 
 type TRegisterStore = {
   urlMode: boolean
@@ -172,7 +178,7 @@ const registerStore = create<TRegisterStore>((set) => ({
       domain: {
         name: "ERS",
         version: "0.1.0",
-        chainId: 1,
+        chainId: chainId,
       },
       message: {
         cid: ipfsCid,
@@ -188,25 +194,10 @@ const registerStore = create<TRegisterStore>((set) => ({
       },
     };
 
-    console.log(`chainId is ${chainId}`)
-    console.log(typedData)
-
     const msgParams = [
       address, // Required
-      typedData, // Required
+      JSON.stringify(typedData), // Required
     ];
-    
-    // const sigData = {
-    //   media: ipfsCid,
-    //   device_id,
-    //   device_token_metadata: JSON.stringify(device_token_metadata),
-    //   minter_addr: address,
-    //   blockNumber: block.number,
-    //   device_sig: JSON.stringify(sigSplit)
-    // }
-
-    // TODO: sign the full data param, not just device_id.
-    // const msgParams = [address, ethers.utils.hashMessage(device_id!)]
   
     connector
       .signTypedData(msgParams)
@@ -236,7 +227,7 @@ const registerStore = create<TRegisterStore>((set) => ({
         const form = getFormData(data)
 
         axios
-          .post(BRIDGE_NODE, form, {
+          .post(BRIDGE_MINT_ENDPOINT, form, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
