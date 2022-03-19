@@ -16,6 +16,7 @@ export function getChainData(chainId: number): IChainData {
       API_KEY
     ) {
       const rpcUrl = chainData.rpc_url.replace("%API_KEY%", API_KEY);
+      console.log(`rpc url is: ${rpcUrl}`)
   
       return {
         ...chainData,
