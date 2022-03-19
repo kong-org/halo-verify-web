@@ -7,9 +7,9 @@ import buf2hex from '../helpers/bufToHex'
 import unpackDERSig from '../helpers/unpackDERSig'
 import formatMinterSig from '../helpers/formatMinterSig'
 import generateCmd from '../helpers/generateCMD'
+import { getChainData } from "../helpers/getChainData"
 import axios from 'axios'
 const ipfsHash = require('ipfs-only-hash')
-import { getChainData } from "../helpers/getChainData"
 
 const BRIDGE_MINT_ENDPOINT = process.env.REACT_APP_BRIDGE_NODE + '/mint';
 
