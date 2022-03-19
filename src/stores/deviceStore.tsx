@@ -15,6 +15,8 @@ import { getChainData } from "../helpers/getChainData"
 const ARWEAVE_GRAPHQL = process.env.REACT_APP_ARWEAVE_NODE + "/graphql" || "https://arweave.net/graphql";
 const TAG_DOMAIN = process.env.REACT_APP_TAG_DOMAIN;
 
+console.log(`tag domain is : ${TAG_DOMAIN}`)
+
 // TODO: allow the user to select a chain id
 const { chainId } = walletStore.getState()
 
