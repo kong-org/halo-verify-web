@@ -55,8 +55,13 @@ If you would like to first test mint with a chip, we recommend first connecting 
 
 _Note: You must have a HaLo chip in order to scan via this app. This app will not scan KONG Cash or SiLo chips._
 
-# Ongoing Development Work
+# Roadmap
 
-- [x] Allow assets to be created across various `chainId`'s
-- [ ] Show the `chainId` in a human-readable fashion, e.g. `Ropsten`
-- [ ] Render a spinner for assets that slowly load from Arweave
+- [x] Allow assets to be created across various `chainId`'s.
+- [ ] Show the `chainId` in a human-readable fashion, e.g. `Ropsten`.
+- [ ] Render a spinner for assets that slowly load from Arweave.
+- [ ] Add and render video content.
+- [ ] Add and render 3D content.
+- [ ] Link to existing Arweave/IPFS resource rather than upload.
+- [ ] WebNFC for Androids.
+- [ ] ERS verification and asset retrieval.
