@@ -1,5 +1,6 @@
 export interface IKeys {
   primaryPublicKeyHash: string
+  primaryPublicKeyKeccakHash: string
   primaryPublicKeyRaw: string
   secondaryPublicKeyHash: string
   secondaryPublicKeyRaw: string

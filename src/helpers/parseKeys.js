@@ -5,6 +5,7 @@ export default function parseKeys(payload) {
     const primaryPublicKeyLength = parseInt('0x' + payload.slice(0, 2)) * 2
     const primaryPublicKeyRaw = payload.slice(2, primaryPublicKeyLength + 2)
     const primaryPublicKeyHash = ethers.utils.sha256('0x' + primaryPublicKeyRaw.slice(2))
+    const primaryPublicKeyKeccakHash = ethers.utils.keccak256('0x' + primaryPublicKeyRaw.slice(2));
 
     const secondaryPublicKeyLength =
       parseInt('0x' + payload.slice(primaryPublicKeyLength + 2, primaryPublicKeyLength + 4)) * 2
@@ -39,6 +40,7 @@ export default function parseKeys(payload) {
 
     const keys = {
       primaryPublicKeyHash: primaryPublicKeyHash,
+      primaryPublicKeyKeccakHash: primaryPublicKeyKeccakHash,
       primaryPublicKeyRaw: primaryPublicKeyRaw,
       secondaryPublicKeyHash: secondaryPublicKeyHash,
       secondaryPublicKeyRaw: secondaryPublicKeyRaw,
