@@ -10,14 +10,14 @@ import registerStore from '../stores/registerStore'
 import formatDescription from '../helpers/formatDescription'
 import truncateAddress from '../helpers/truncateAddress'
 import walletStore from '../stores/walletStore'
-import { getChainData } from "../helpers/getChainData"
+import { getChainData } from '../helpers/getChainData'
 
-const ARWEAVE_NODE = process.env.REACT_APP_ARWEAVE_NODE || "https://arweave.net";
+const ARWEAVE_NODE = process.env.REACT_APP_ARWEAVE_NODE || 'https://arweave.net'
 
 // TODO: allow the user to select a chain id
 const { chainId } = walletStore.getState()
 
-const CHAIN_ID = chainId || 1;
+const CHAIN_ID = chainId || 1
 const EXPLORER = getChainData(CHAIN_ID).explorer
 
 export default function Success() {
@@ -74,7 +74,7 @@ export default function Success() {
             </p>
           )}
 
-          <p className="mt-3">{formatDescription(meta.description)}</p>
+          <div className="mt-3" dangerouslySetInnerHTML={{ __html: formatDescription(meta.description) }}></div>
         </div>
 
         <Divider />
