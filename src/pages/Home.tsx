@@ -83,7 +83,9 @@ export default function Home() {
               <br />
               Detected
             </h1>
-            <p className="text-dark-gray text-sm mt-4 mb-4">Scan HaLo by tapping the button below and holding the chip to your smartphone NFT antenna.</p>
+            <p className="text-dark-gray text-sm mt-4 mb-4">
+              Scan HaLo by tapping the button below and holding the chip to your smartphone NFT antenna.
+            </p>
           </>
         )}
       </CardPadding>
