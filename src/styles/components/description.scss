@@ -1,0 +1,31 @@
+.description {
+  font-size: 13px;
+
+  & > * + * {
+    margin-top: 20px;
+  }
+
+  li + li {
+    margin-top: 10px;
+  }
+
+  ul li {
+    list-style: disc;
+    margin-left: 18px;
+  }
+
+  ol li {
+    list-style: decimal;
+    margin-left: 18px;
+  }
+
+  h1,h2,h3,h4,h5,h6 {
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+}

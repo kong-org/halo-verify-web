@@ -74,7 +74,7 @@ export default function Success() {
             </p>
           )}
 
-          <div className="mt-3" dangerouslySetInnerHTML={{ __html: formatDescription(meta.description) }}></div>
+          <div className="mt-3 description" dangerouslySetInnerHTML={{ __html: formatDescription(meta.description) }}></div>
         </div>
 
         <Divider />
