@@ -1,5 +1,6 @@
 .description {
   font-size: 13px;
+  word-break: break-all;
 
   & > * + * {
     margin-top: 20px;
