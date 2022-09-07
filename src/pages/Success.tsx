@@ -79,8 +79,8 @@ export default function Success() {
 
         <Divider />
 
-        <h3 className="font-normal mt-4 mb-1 text-light-gray text-xs">Ethereum address</h3>
-        <p className="break-word font-bold text-smb">{ds.device.device_address}</p>
+        <h3 className="font-normal mt-4 mb-1 text-light-gray text-xs">Device ID</h3>
+        <p className="break-word font-bold text-smb">{ds.keys?.primaryPublicKeyHash}</p>
       </CardPadding>
     </Card>
   )
