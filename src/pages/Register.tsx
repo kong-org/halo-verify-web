@@ -16,6 +16,9 @@ export default function Register() {
 
   const handleFileChange = (e: any) => {
     const file = e.target.files[0]
+
+    console.log(file)
+
     file.size < 5000001 ? rs.changeFileField(file) : alert('Media must be 5mb in size or less')
   }
 
@@ -37,17 +40,31 @@ export default function Register() {
                 id="image"
                 className="hidden"
                 type="file"
-                accept="image/png, image/jpeg"
+                accept="image/png, image/jpeg, video/mp4, video/x-m4v, video/*"
                 name="image"
               />
               <label htmlFor="image" className="button small black">
-                Add Image
+                Add Media
               </label>
             </div>
           </GrayCenterBox>
 
           <div className={classNames('register-image-preview', { previewing: rs.previewing })}>
-            {rs.base64Image ? <img src={rs.base64Image} /> : <img src={rs.registerForm.imageSrc} />}
+            {rs.type === 'image' && (
+              <>{rs.base64Image ? <img src={rs.base64Image} /> : <img src={rs.registerForm.imageSrc} />}</>
+            )}
+
+            {rs.type === 'video' && (
+              <>
+                {rs.base64Image ? (
+                  <video autoPlay muted playsInline>
+                    <source src={rs.base64Image} />
+                  </video>
+                ) : (
+                  <img src={rs.registerForm.imageSrc} />
+                )}
+              </>
+            )}
 
             <button className="register-image-preview-remove" onClick={rs.clearImage}>
               <X />

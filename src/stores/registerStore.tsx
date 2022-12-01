@@ -7,20 +7,21 @@ import buf2hex from '../helpers/bufToHex'
 import unpackDERSig from '../helpers/unpackDERSig'
 import formatMinterSig from '../helpers/formatMinterSig'
 import generateCmd from '../helpers/generateCMD'
-import { getChainData } from "../helpers/getChainData"
+import { getChainData } from '../helpers/getChainData'
 import axios from 'axios'
 const ipfsHash = require('ipfs-only-hash')
 
-const BRIDGE_MINT_ENDPOINT = process.env.REACT_APP_BRIDGE_NODE + '/mint';
+const BRIDGE_MINT_ENDPOINT = process.env.REACT_APP_BRIDGE_NODE + '/mint'
 
 // TODO: allow the user to select a chain id
 const { chainId } = walletStore.getState()
 
-const CHAIN_ID = chainId || 1;
+const CHAIN_ID = chainId || 1
 const ETH_NODE = getChainData(CHAIN_ID).rpc_url
 
 type TRegisterStore = {
   urlMode: boolean
+  type: 'image' | 'video'
   base64Image: any
   previewing: boolean
   loading: boolean
@@ -51,6 +52,7 @@ type TRegisterStore = {
 
 const registerStore = create<TRegisterStore>((set) => ({
   urlMode: false,
+  type: 'image',
   base64Image: false,
   loading: false,
   previewing: false,
@@ -83,12 +85,15 @@ const registerStore = create<TRegisterStore>((set) => ({
   },
 
   changeFileField: (file: any) => {
+    const isVideo = file.type.indexOf('video') > -1
+
     // Set state to the file
     set((state) => ({
       registerForm: {
         ...state.registerForm,
         image: file,
       },
+      type: isVideo ? 'video' : 'image',
       previewing: true,
     }))
 
@@ -125,9 +130,7 @@ const registerStore = create<TRegisterStore>((set) => ({
   // TODO: sign the address of the connected wallet with blockhash if available.
   scanHalo: async () => {
     const { triggerScan } = deviceStore.getState()
-    const provider: any = new ethers.providers.JsonRpcProvider(
-      ETH_NODE
-    )
+    const provider: any = new ethers.providers.JsonRpcProvider(ETH_NODE)
 
     const block = await provider.getBlock()
     // Note: we may want to change this format to accomodate more data than the blockHash in the future.
@@ -156,28 +159,28 @@ const registerStore = create<TRegisterStore>((set) => ({
     const typedData = {
       types: {
         EIP712Domain: [
-          { name: "name", type: "string" },
-          { name: "version", type: "string" },
-          { name: "chainId", type: "uint256" },
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
         ],
         Device: [
-          { name: "id", type: "string" },
-          { name: "signatureR", type: "string" },
-          { name: "signatureS", type: "string" },           
-          { name: "digest", type: "string" },  
+          { name: 'id', type: 'string' },
+          { name: 'signatureR', type: 'string' },
+          { name: 'signatureS', type: 'string' },
+          { name: 'digest', type: 'string' },
         ],
         Media: [
-          { name: "cid", type: "string" },
-          { name: "name", type: "string" },
-          { name: "description", type: "string" },
-          { name: "minter", type: "address" },
-          { name: "device", type: "Device" },
+          { name: 'cid', type: 'string' },
+          { name: 'name', type: 'string' },
+          { name: 'description', type: 'string' },
+          { name: 'minter', type: 'address' },
+          { name: 'device', type: 'Device' },
         ],
       },
-      primaryType: "Media",
+      primaryType: 'Media',
       domain: {
-        name: "ERS",
-        version: "0.1.0",
+        name: 'ERS',
+        version: '0.1.0',
         chainId: chainId,
       },
       message: {
@@ -192,20 +195,20 @@ const registerStore = create<TRegisterStore>((set) => ({
           digest: sigMsg,
         },
       },
-    };
+    }
 
     const msgParams = [
       address, // Required
       JSON.stringify(typedData), // Required
-    ];
-  
+    ]
+
     connector
       .signTypedData(msgParams)
       .then((result) => {
         set({ loading: true })
 
         console.log(`submitting data`)
-        
+
         const data = {
           media: image,
           device_id,
@@ -215,7 +218,7 @@ const registerStore = create<TRegisterStore>((set) => ({
           blockNumber: block.number,
           minter_addr: address,
           minter_sig: JSON.stringify(formatMinterSig(result)),
-          minter_chain_id: chainId
+          minter_chain_id: chainId,
         }
 
         function getFormData(object: any) {
