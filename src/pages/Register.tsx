@@ -57,7 +57,7 @@ export default function Register() {
             {rs.type === 'video' && (
               <>
                 {rs.base64Image ? (
-                  <video autoPlay muted playsInline>
+                  <video loop autoPlay muted playsInline>
                     <source src={rs.base64Image} />
                   </video>
                 ) : (

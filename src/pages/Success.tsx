@@ -53,7 +53,7 @@ export default function Success() {
     <Card className="relative">
       {isVideo ? (
         <>
-          <video autoPlay muted playsInline>
+          <video loop autoPlay muted playsInline>
             <source src={rs.base64Image ? rs.base64Image : `${ARWEAVE_NODE}/${ds.device.node_id}`} />
           </video>
         </>
