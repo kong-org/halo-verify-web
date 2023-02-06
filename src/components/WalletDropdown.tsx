@@ -6,21 +6,21 @@ import { ReactComponent as ChevronUp } from '../svg/chevron-up.svg'
 import { ReactComponent as Arrow } from '../svg/arrow-up-right.svg'
 import connector from '../walletConnect'
 import truncateAddress from '../helpers/truncateAddress'
+import { useDisconnect } from 'wagmi'
 
 declare var window: any
 
 export default function WalletDropdown() {
+  const { disconnect } = useDisconnect()
+
   const setActive = walletStore((s) => s.setDropdownActive)
-  const disconnect = walletStore((s) => s.disconnect)
 
   const active = walletStore((s) => s.dropdownActive)
   const address = walletStore((s) => s.address)
   const together = truncateAddress(address)
 
   const handleDisconnect = () => {
-    if (connector?.peerMeta?.url) {
-      window.open(connector?.peerMeta?.url, '_blank').focus()
-    }
+    disconnect()
   }
 
   return (
@@ -43,7 +43,7 @@ export default function WalletDropdown() {
             <span className="wallet-dropdown-wallet-link-indicator"></span>
             <span className="wallet-dropdown-wallet-link-address">{together}</span>
           </span>
-          <button onClick={disconnect} className="wallet-dropdown-wallet-disconnect">
+          <button onClick={handleDisconnect} className="wallet-dropdown-wallet-disconnect">
             Disconnect
           </button>
         </div>

@@ -7,7 +7,7 @@ type TWalletStore = {
   requestAccess(): void
   connected: boolean
   ready: boolean
-  address: string
+  address: any
   chainId: number
   dropdownActive: boolean
   setDropdownActive(dropdownActive: boolean): void
@@ -20,7 +20,7 @@ const walletStore = create<TWalletStore>((set) => ({
   chainId: connector?.chainId || 1,
   ready: false,
   dropdownActive: false,
-  connected: connector.connected,
+  connected: false,
 
   requestAccess: async () => {
     if (!connector.connected) {
@@ -29,11 +29,10 @@ const walletStore = create<TWalletStore>((set) => ({
   },
 
   connect: (address, chainId) => {
-    set({ address, chainId, connected: connector.connected })
+    set({ address, chainId, connected: true })
   },
 
   disconnect: async () => {
-    await connector.killSession()
     set({ dropdownActive: false, address: '', chainId: 0, connected: false })
   },
 
