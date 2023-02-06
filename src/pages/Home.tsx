@@ -13,8 +13,6 @@ function LinkButton() {
   const connected = walletStore((s) => s.address).length > 0
   const registered = deviceStore((s) => s.registered)
 
-  console.log({ connected, registered, device })
-
   if (!keys) {
     return (
       <Button fullWidth onClick={linkHalo}>
@@ -31,11 +29,9 @@ function LinkButton() {
     )
   } else if (device && !connected && !registered) {
     return (
-      <>
-        <Button fullWidth disabled>
-          Mint Halo
-        </Button>
-      </>
+      <Button fullWidth disabled>
+        Mint Halo
+      </Button>
     )
   } else if (device && keys && !registered) {
     return (
