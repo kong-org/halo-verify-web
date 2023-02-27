@@ -1,31 +1,28 @@
+import { useWeb3Modal } from '@web3modal/react'
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAccount, useNetwork } from 'wagmi'
 import walletStore from '../stores/walletStore'
 
-import { ReactComponent as Logo } from '../svg/logo.svg'
-import connector from '../walletConnect'
 import Button from './Button'
 import WalletDropdown from './WalletDropdown'
 
 export default function Header() {
   const store = walletStore()
+  const { open } = useWeb3Modal()
+  const { address, isConnected, isDisconnected } = useAccount()
+  const { chain } = useNetwork()
 
   useEffect(() => {
-    connector.on('connect', (error, payload) => {
-      if (error) return
-      store.connect(payload.params[0].accounts[0], payload.params[0].chainId)
-    })
+    if (isConnected && address) {
+      console.log('connected!')
+      store.connect(address, chain?.id || 1)
+    }
 
-    connector.on('session_update', (error, payload) => {
-      if (error) return
-      store.connect(payload.params[0].accounts[0], payload.params[0].chainId)
-    })
-
-    connector.on('disconnect', (error, payload) => {
-      if (error) return
+    if (isDisconnected) {
       store.disconnect()
-    })
-  }, [])
+    }
+  }, [address, isConnected, isDisconnected])
 
   return (
     <header className="header">
@@ -36,7 +33,7 @@ export default function Header() {
       {store.connected ? (
         <WalletDropdown />
       ) : (
-        <Button size="small" color="pink-gradient" onClick={store.requestAccess}>
+        <Button size="small" color="pink-gradient" onClick={open}>
           Connect wallet
         </Button>
       )}

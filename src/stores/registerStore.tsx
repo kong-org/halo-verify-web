@@ -2,21 +2,22 @@ import create from 'zustand'
 import deviceStore from './deviceStore'
 import { ethers } from 'ethers'
 import walletStore from './walletStore'
-import connector from '../walletConnect'
 import buf2hex from '../helpers/bufToHex'
 import unpackDERSig from '../helpers/unpackDERSig'
 import formatMinterSig from '../helpers/formatMinterSig'
 import generateCmd from '../helpers/generateCMD'
-import { getChainData } from "../helpers/getChainData"
+import { getChainData } from '../helpers/getChainData'
 import axios from 'axios'
+import { signTypedData } from '@wagmi/core'
+
 const ipfsHash = require('ipfs-only-hash')
 
-const BRIDGE_MINT_ENDPOINT = process.env.REACT_APP_BRIDGE_NODE + '/mint';
+const BRIDGE_MINT_ENDPOINT = process.env.REACT_APP_BRIDGE_NODE + '/mint'
 
 // TODO: allow the user to select a chain id
 const { chainId } = walletStore.getState()
 
-const CHAIN_ID = chainId || 1;
+const CHAIN_ID = chainId || 1
 const ETH_NODE = getChainData(CHAIN_ID).rpc_url
 
 type TRegisterStore = {
@@ -47,6 +48,7 @@ type TRegisterStore = {
   signHalo(): void
   scanHalo(): void
   registerHalo(): void
+  test(): any
 }
 
 const registerStore = create<TRegisterStore>((set) => ({
@@ -125,9 +127,7 @@ const registerStore = create<TRegisterStore>((set) => ({
   // TODO: sign the address of the connected wallet with blockhash if available.
   scanHalo: async () => {
     const { triggerScan } = deviceStore.getState()
-    const provider: any = new ethers.providers.JsonRpcProvider(
-      ETH_NODE
-    )
+    const provider: any = new ethers.providers.JsonRpcProvider(ETH_NODE)
 
     const block = await provider.getBlock()
     // Note: we may want to change this format to accomodate more data than the blockHash in the future.
@@ -153,59 +153,52 @@ const registerStore = create<TRegisterStore>((set) => ({
     const ipfsCid = await ipfsHash.of(base64Image)
     console.log(`ipfs hash ${ipfsCid}`)
 
-    const typedData = {
-      types: {
-        EIP712Domain: [
-          { name: "name", type: "string" },
-          { name: "version", type: "string" },
-          { name: "chainId", type: "uint256" },
-        ],
-        Device: [
-          { name: "id", type: "string" },
-          { name: "signatureR", type: "string" },
-          { name: "signatureS", type: "string" },           
-          { name: "digest", type: "string" },  
-        ],
-        Media: [
-          { name: "cid", type: "string" },
-          { name: "name", type: "string" },
-          { name: "description", type: "string" },
-          { name: "minter", type: "address" },
-          { name: "device", type: "Device" },
-        ],
-      },
-      primaryType: "Media",
-      domain: {
-        name: "ERS",
-        version: "0.1.0",
-        chainId: chainId,
-      },
-      message: {
-        cid: ipfsCid,
-        name: device_token_metadata.name,
-        description: device_token_metadata.description,
-        minter: address,
-        device: {
-          id: device_id,
-          signatureR: sigSplit.r,
-          signatureS: sigSplit.s,
-          digest: sigMsg,
-        },
-      },
-    };
+    const types = {
+      EIP712Domain: [
+        { name: 'name', type: 'string' },
+        { name: 'version', type: 'string' },
+        { name: 'chainId', type: 'uint256' },
+      ],
+      Device: [
+        { name: 'id', type: 'string' },
+        { name: 'signatureR', type: 'string' },
+        { name: 'signatureS', type: 'string' },
+        { name: 'digest', type: 'string' },
+      ],
+      Media: [
+        { name: 'cid', type: 'string' },
+        { name: 'name', type: 'string' },
+        { name: 'description', type: 'string' },
+        { name: 'minter', type: 'address' },
+        { name: 'device', type: 'Device' },
+      ],
+    }
 
-    const msgParams = [
-      address, // Required
-      JSON.stringify(typedData), // Required
-    ];
-  
-    connector
-      .signTypedData(msgParams)
+    const domain = {
+      name: 'ERS',
+      version: '0.1.0',
+      chainId: chainId,
+    }
+
+    const value = {
+      cid: ipfsCid,
+      name: device_token_metadata.name,
+      description: device_token_metadata.description,
+      minter: address,
+      device: {
+        id: device_id,
+        signatureR: sigSplit.r,
+        signatureS: sigSplit.s,
+        digest: sigMsg,
+      },
+    }
+
+    signTypedData({ domain, types, value })
       .then((result) => {
         set({ loading: true })
 
         console.log(`submitting data`)
-        
+
         const data = {
           media: image,
           device_id,
@@ -215,7 +208,7 @@ const registerStore = create<TRegisterStore>((set) => ({
           blockNumber: block.number,
           minter_addr: address,
           minter_sig: JSON.stringify(formatMinterSig(result)),
-          minter_chain_id: chainId
+          minter_chain_id: chainId,
         }
 
         function getFormData(object: any) {
@@ -258,6 +251,59 @@ const registerStore = create<TRegisterStore>((set) => ({
         console.log(error)
         alert('Something went wrong pre.')
       })
+  },
+
+  test: async () => {
+    const { address, chainId } = walletStore.getState()
+
+    const types = {
+      EIP712Domain: [
+        { name: 'name', type: 'string' },
+        { name: 'version', type: 'string' },
+        { name: 'chainId', type: 'uint256' },
+      ],
+      Device: [
+        { name: 'id', type: 'string' },
+        { name: 'signatureR', type: 'string' },
+        { name: 'signatureS', type: 'string' },
+        { name: 'digest', type: 'string' },
+      ],
+      Media: [
+        { name: 'cid', type: 'string' },
+        { name: 'name', type: 'string' },
+        { name: 'description', type: 'string' },
+        { name: 'minter', type: 'address' },
+        { name: 'device', type: 'Device' },
+      ],
+    }
+
+    const value = {
+      cid: '123',
+      name: '123',
+      description: '123',
+      minter: address,
+      device: {
+        id: '123',
+        signatureR: '123',
+        signatureS: '123',
+        digest: '123',
+      },
+    }
+
+    const domain = {
+      name: 'ERS',
+      version: '0.1.0',
+      chainId: chainId,
+    }
+
+    // @ts-ignore
+    const signature = await signTypedData({
+      domain,
+      types,
+      value,
+    })
+
+    console.log(signature)
   },
 
   registerHalo: () => {
