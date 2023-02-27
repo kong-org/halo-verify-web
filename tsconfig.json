@@ -16,5 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
+  "inlineSources": true,
   "include": ["src", "src/custom.d.ts"]
 }
