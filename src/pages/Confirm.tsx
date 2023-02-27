@@ -1,13 +1,10 @@
 import classNames from 'classnames'
-import React from 'react'
 import { Navigate } from 'react-router-dom'
 import Button from '../components/Button'
 import Card, { CardBack, CardFooter, CardPadding } from '../components/Card'
-import Chip from '../components/Chip'
 import Loading from '../components/Loading'
 import deviceStore from '../stores/deviceStore'
 import registerStore from '../stores/registerStore'
-import walletStore from '../stores/walletStore'
 
 export default function Confirm() {
   const form = registerStore((s) => s.registerForm)

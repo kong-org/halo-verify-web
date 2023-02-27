@@ -4,6 +4,7 @@ import Button from '../components/Button'
 import Card, { CardFooter, CardPadding } from '../components/Card'
 import Chip from '../components/Chip'
 import deviceStore from '../stores/deviceStore'
+import registerStore from '../stores/registerStore'
 import walletStore from '../stores/walletStore'
 
 function LinkButton() {
@@ -54,6 +55,7 @@ export default function Home() {
   const loading = deviceStore((s) => s.loading)
   const connected = walletStore((s) => s.address).length > 0
   const registered = deviceStore((s) => s.registered)
+  // const test = registerStore((s) => s.test)
 
   useEffect(() => {
     init()
@@ -63,6 +65,9 @@ export default function Home() {
     <Card loading={loading}>
       <CardPadding>
         <Chip detected={keys ? true : false} />
+
+        {/* {connected && <button onClick={test}>Test</button>} */}
+
         {keys ? (
           <>
             <h1 className="text-3xl mt-6 font-expanded uppercase">

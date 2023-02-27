@@ -1,10 +1,6 @@
 import classNames from 'classnames'
-import React from 'react'
-
 import walletStore from '../stores/walletStore'
 import { ReactComponent as ChevronUp } from '../svg/chevron-up.svg'
-import { ReactComponent as Arrow } from '../svg/arrow-up-right.svg'
-import connector from '../walletConnect'
 import truncateAddress from '../helpers/truncateAddress'
 import { useDisconnect } from 'wagmi'
 

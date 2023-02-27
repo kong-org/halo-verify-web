@@ -1,6 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
+import { Web3Modal } from '@web3modal/react'
+import { configureChains, createClient, WagmiConfig } from 'wagmi'
+import { arbitrum, mainnet, polygon } from 'wagmi/chains'
 
 import './styles/style.scss'
 import Home from './pages/Home'
@@ -10,14 +14,6 @@ import Footer from './components/Footer'
 import Register from './pages/Register'
 import Confirm from './pages/Confirm'
 import Success from './pages/Success'
-
-import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum'
-
-import { Web3Modal } from '@web3modal/react'
-
-import { configureChains, createClient, WagmiConfig } from 'wagmi'
-
-import { arbitrum, mainnet, polygon } from 'wagmi/chains'
 
 const chains = [arbitrum, mainnet, polygon]
 
