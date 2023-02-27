@@ -9,18 +9,18 @@ import { IDevice, IKeys } from '../types'
 import generateArweaveQuery from '../helpers/generateArweaveQuery'
 import { ethers } from 'ethers'
 import walletStore from './walletStore'
-import { getChainData } from "../helpers/getChainData"
+import { getChainData } from '../helpers/getChainData'
 
 // Note: one can create "test" records by modifying the Eth node and selecting a different chain in the wallet which signs.
-const ARWEAVE_GRAPHQL = process.env.REACT_APP_ARWEAVE_NODE + "/graphql" || "https://arweave.net/graphql";
-const TAG_DOMAIN = process.env.REACT_APP_TAG_DOMAIN;
+const ARWEAVE_GRAPHQL = process.env.REACT_APP_ARWEAVE_NODE + '/graphql' || 'https://arweave.net/graphql'
+const TAG_DOMAIN = window.location.host
 
 console.log(`tag domain is : ${TAG_DOMAIN}`)
 
 // TODO: allow the user to select a chain id
 const { chainId } = walletStore.getState()
 
-const CHAIN_ID = chainId || 1;
+const CHAIN_ID = chainId || 1
 const ETH_NODE = getChainData(CHAIN_ID).rpc_url
 
 type TDeviceStore = {
@@ -113,13 +113,15 @@ const deviceStore = create<TDeviceStore>((set) => ({
 
         // Filter for only chainId 1. TODO: show records created for multiple chains.
         console.log(`filtering for + ${CHAIN_ID}`)
-        set({ device: mapped[0], registered: mapped[0].device_record_type === 'Device-Media' && +mapped[0].chain_id === CHAIN_ID, loading: false })
+        set({
+          device: mapped[0],
+          registered: mapped[0].device_record_type === 'Device-Media' && +mapped[0].chain_id === CHAIN_ID,
+          loading: false,
+        })
 
         if (mapped[0].device_minter && mapped[0].chain_id === CHAIN_ID) {
           // Get the creator
-          const provider: any = new ethers.providers.JsonRpcProvider(
-            ETH_NODE
-          )
+          const provider: any = new ethers.providers.JsonRpcProvider(ETH_NODE)
 
           const creator = await provider.lookupAddress(mapped[0].device_minter)
 
