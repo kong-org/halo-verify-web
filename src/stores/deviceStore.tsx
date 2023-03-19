@@ -79,7 +79,9 @@ const deviceStore = create<TDeviceStore>((set) => ({
           const tag = t.node.tags.find((tag: any) => {
             return tag.name === 'Device-Record-Type'
           })
-
+          console.log(tag)
+          console.log(tag.name)
+          console.log(tag.value)
           if (tag === 'Device-Media') return
         })
         console.log("transaction index.")
