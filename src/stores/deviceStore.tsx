@@ -82,7 +82,7 @@ const deviceStore = create<TDeviceStore>((set) => ({
           console.log(tag)
           console.log(tag.name)
           console.log(tag.value)
-          if (tag === 'Device-Media') return
+          if (tag.value === 'Device-Media') return
         })
         console.log("transaction index.")
         console.log(transactionIndex)
