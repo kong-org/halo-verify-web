@@ -82,6 +82,8 @@ const deviceStore = create<TDeviceStore>((set) => ({
 
           if (tag === 'Device-Media') return
         })
+        console.log("transaction index.")
+        console.log(transactionIndex)
         const tIndex = transactionIndex > -1 ? transactionIndex : 0
 
         console.log('Search response for device-media record index', tIndex)
