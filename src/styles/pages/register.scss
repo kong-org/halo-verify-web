@@ -48,7 +48,8 @@
     transition: $fadeOn;
   }
 
-  img {
+  img,
+  video {
     height: 280px;
     width: 100%;
     object-fit: cover;

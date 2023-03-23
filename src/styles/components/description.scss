@@ -20,7 +20,12 @@
     margin-left: 18px;
   }
 
-  h1,h2,h3,h4,h5,h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-size: 13px;
     font-weight: bold;
   }
@@ -28,5 +33,18 @@
   a {
     color: black;
     text-decoration: underline;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    border: 1px solid $border;
+    text-align: left;
+    padding: 7px;
+    font-size: 13px;
   }
 }

@@ -74,26 +74,41 @@ const deviceStore = create<TDeviceStore>((set) => ({
       .then(async (res) => {
         console.log('re got a response', res)
 
-        const transactions = res.data.data.transactions.edges
-        const transactionIndex = transactions.findIndex((t: any) => {
-          const tag = t.node.tags.find((tag: any) => {
-            return tag.name === 'Device-Record-Type'
-          })
+        // Default to first record
+        let rightTransaction = res.data.data.transactions.edges[0]
 
-          console.log(tag.name)
-          console.log(tag.value)
-          if (tag && tag.value === 'Device-Media') {
-            return true;
+        // Look for a matching registered record
+        for (let i = 0; i < res.data.data.transactions.edges.length; i++) {
+          const transaction = res.data.data.transactions.edges[i]
+
+          if (!transaction?.node?.tags) continue
+
+          let chainPass = false
+          let mediaPass = false
+
+          for (let j = 0; j < transaction.node.tags.length; j++) {
+            const tag = transaction.node.tags[j]
+
+            if (tag.name === 'Device-Record-Type' && tag.value === 'Device-Media') {
+              mediaPass = true
+              continue
+            }
+
+            if (tag.name === 'Device-Minter-Chain-Id' && Number(tag.value) === chainId) {
+              chainPass = true
+              continue
+            }
           }
-        })
-        console.log("transaction index.")
-        console.log(transactionIndex)
-        const tIndex = transactionIndex > -1 ? transactionIndex : 0
 
-        console.log('Search response for device-media record index', tIndex)
+          if (chainPass && mediaPass) {
+            console.log('we found a match', transaction)
+            rightTransaction = transaction
+            break
+          }
+        }
 
         // Create a device object from the first record
-        const mapped = [transactions[tIndex || 0]].flatMap((nodeItem: any) => {
+        const mapped = [rightTransaction].flatMap((nodeItem: any) => {
           const node = nodeItem.node
 
           return {

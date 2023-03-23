@@ -3,6 +3,11 @@
   border-radius: 30px;
   position: relative;
   overflow: hidden;
+
+  video {
+    display: block;
+    width: 100%;
+  }
 }
 
 .card-loading {

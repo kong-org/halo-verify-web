@@ -48,9 +48,18 @@ export default function Success() {
 
   const meta = JSON.parse(ds.device.device_token_metadata)
 
+  const isVideo = ds.device.content_type.indexOf('video') > -1
+
   return (
     <Card className="relative">
-      <img src={rs.base64Image ? rs.base64Image : `${ARWEAVE_NODE}/${ds.device.node_id}`} />
+      {isVideo ? (
+        <video autoPlay loop playsInline muted>
+          <source src={`${ARWEAVE_NODE}/${ds.device.node_id}`} />
+        </video>
+      ) : (
+        <img src={rs.base64Image ? rs.base64Image : `${ARWEAVE_NODE}/${ds.device.node_id}`} />
+      )}
+
       <CardPadding>
         <Badge>
           <Smile /> <span className="ml-2">Successful</span>
@@ -74,7 +83,10 @@ export default function Success() {
             </p>
           )}
 
-          <div className="mt-3 description" dangerouslySetInnerHTML={{ __html: formatDescription(meta.description) }}></div>
+          <div
+            className="mt-3 description"
+            dangerouslySetInnerHTML={{ __html: formatDescription(meta.description) }}
+          ></div>
         </div>
 
         <Divider />
